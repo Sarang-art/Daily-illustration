@@ -1,0 +1,127 @@
+@font-face {
+  font-family: dmsans;
+  src: url(/home/aimee/daily_illustration/resources/fonts/dmsans.ttf);
+font-family: nyghtserif;
+  src: url(/home/aimee/daily_illustration/resources/fonts/nyghtserif-medium.woff)
+}
+
+html {
+    font-family: dmsans, sans-serif;
+}
+
+/* components -----------------------*/
+.container {
+  max-width: 1040px;
+  align-content: center;
+}
+.container-fluid {
+    max-width: none;
+    
+}
+.btn, .btn-outline-primary {
+    border-color: black;
+    font-family: dmsans;
+    font-size: 16px;
+    background-color: #ffffff;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-radius: 24px;
+    font-weight: bold;
+    color: black;
+    background-color: transparent;
+}
+.btn:hover, .btn-outline-primary:hover {
+    color: #ffffff;
+    background-color: black;
+    border-color: black;
+}
+
+/* card ----------------------- */
+.card {
+    padding: 16px;
+    border: none;
+}
+.card:hover{
+    filter: drop-shadow( 0px 4px 16px #B4CCEF)
+}
+.card-header {
+    font-family: dmsans;
+    font-size: 22px;
+    font-weight: bold;
+}
+.card-title {
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+.card-body {
+    font-family: dmsans;
+    font-size: 20px;
+    font-weight: light;
+    padding: 0%;
+}
+.card-wrap {
+    padding: 0;
+}
+
+/* typography ----------------------- */
+h1 {
+    font-family: nyghtserif;
+    font-size: 64px;
+    text-align: center;
+}
+h2 {
+    font-family: nyghtserif;
+    font-size: 40px;
+    text-align: center;
+}
+h3 {
+    font-family: nyghtserif;
+    font-size: 30px;
+}
+h4 {
+    font-family: dmsans;
+    font-weight:100;
+    text-transform: uppercase;
+    font-size: 20px;
+    margin-bottom: 24px;
+}
+h5 {
+    font-family: dmsans;
+    font-size: 22px;
+    font-weight: bold;
+}
+.subtitle {
+    font-family: dmsans;
+    font-size: 20px;
+    font-weight: lighter;
+}
+.hero-heading {
+    text-align: center;
+    padding-bottom: 32px;
+}
+.footer-caption {
+    font-family: dmsans;
+    font-size: 14px;
+}
+
+/* img ------------------------------------- */
+.hero-img {
+    max-width: 635px;
+    margin-bottom: 24px;
+
+}
+/* section ----------------------------------------- */
+.hero {
+    padding-top: 48px;
+    padding-bottom: 48px;
+}
+.section {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+.color-section {
+    background-color: black;
+    color: #ffffff;
+}
