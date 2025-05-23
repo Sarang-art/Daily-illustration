@@ -1,13 +1,12 @@
 @font-face {
   font-family: dmsans;
-  src: url(/home/aimee/daily_illustration/resources/fonts/dmsans.ttf);
+  src: url(/home/aimee/daily_illustration/resources/fonts/DMSans-VariableFont_opsz,wght.woff);
+  font-family: dmsans-light;
+  src: url(/home/aimee/daily_illustration/resources/fonts/dmsans-light.ttf);
 font-family: nyghtserif;
   src: url(/home/aimee/daily_illustration/resources/fonts/nyghtserif-medium.woff)
 }
 
-html {
-    font-family: dmsans, sans-serif;
-}
 
 /* components -----------------------*/
 .container {
@@ -31,12 +30,21 @@ html {
     font-weight: bold;
     color: black;
     background-color: transparent;
+    margin-top: 8px;
+    width: auto; /* Makes width adjust to content */
+    display: inline-block; /* Better for auto-width buttons */
+    white-space: nowrap; /* Prevents text wrapping */
 }
 .btn:hover, .btn-outline-primary:hover {
     color: #ffffff;
     background-color: black;
     border-color: black;
 }
+a, a:hover { 
+    color: inherit; 
+    text-decoration: inherit;
+    cursor:pointer;
+} 
 
 /* card ----------------------- */
 .card {
@@ -60,17 +68,21 @@ html {
     font-size: 20px;
     font-weight: light;
     padding: 0%;
+
 }
 .card-wrap {
     padding: 0;
+    margin-bottom: 40px;
 }
 
 /* typography ----------------------- */
+
 h1 {
     font-family: nyghtserif;
     font-size: 64px;
     text-align: center;
 }
+
 h2 {
     font-family: nyghtserif;
     font-size: 40px;
@@ -93,7 +105,7 @@ h5 {
     font-weight: bold;
 }
 .subtitle {
-    font-family: dmsans;
+    font-family: dmsans-light;
     font-size: 20px;
     font-weight: lighter;
 }
@@ -105,13 +117,26 @@ h5 {
     font-family: dmsans;
     font-size: 14px;
 }
+p {
+    font-family: dmsans;
+    font-weight: 100;
+}
+.bold {
+    font-weight: bold;
+}
 
 /* img ------------------------------------- */
 .hero-img {
     max-width: 635px;
     margin-bottom: 24px;
+    width: 100%;
+    min-width: 477px;
 
 }
+.card-img-top {
+margin-bottom: 8px;
+}
+    
 /* section ----------------------------------------- */
 .hero {
     padding-top: 48px;
@@ -124,4 +149,10 @@ h5 {
 .color-section {
     background-color: black;
     color: #ffffff;
+    padding: -32px -0px;
+}
+footer {
+    padding: 40px 0px;
+    text-align: center;
+    align-content: center;
 }
