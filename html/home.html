@@ -8,34 +8,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/home/aimee/daily_illustration/bootstrap-4.0.0-dist/css/master.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <title>Dailly Illustration</title>
 </head>
 
 <body>
+
+  <!-- Hero -->
+
     <div class="container hero" name="hero">
-        <div class="container hero-heading">
-        <h1>Dailly Illustration</h1>
-        <p class="subtitle hero-heading">[today's date]</p>
-        </div>
-        <div class="container">
-            <a href="https://www.artstation.com/artwork/188m1X" target="_blank">
-            <div class="row">
-                <div class="col order-lg-2 order-sm-md-1">
+    <div class="container hero-heading">
+        <h1>Daily Illustration</h1>
+        <p class="subtitle hero-heading subtitle">[today's date]</p>
+    </div>
+    <div class="container hero-content">
+        <a href="https://www.artstation.com/artwork/188m1X" target="_blank">
+            <div class="row align-items-lg-end"> <!-- Changed to align-items-lg-end -->
+                <!-- Image column -->
+                <div class="col-12 col-lg-8 order-lg-2 order-1">
                     <img class="hero-img" src="https://cdna.artstation.com/p/assets/images/images/028/413/800/large/valentina-remenar-guiding-star-by-valentina-remenar.jpg?1594397072">
                 </div>
-                <div class="col order-lg-1 order-sm-md-1">
-                    <h4>Illustration of the day</h4>
-                    <h3>[Illustration title]</h3>
-                    <p class="subtitle">By [Author's name]</p>
-                    <p class="subtitle">[year]</p></a>
-                    <button class="btn btn-outline-primary">Collect</button>
+                <!-- Text column - now aligned to bottom -->
+                <div class="col-12 col-lg-4 order-lg-1 order-2 hero-text">
+                    <div class="hero-text-content"> <!-- Added wrapper div -->
+                        <h4>Illustration of the day</h4>
+                        <h3>[Illustration title]</h3>
+                        <p class="subtitle">By [Author's name] <br class="subtitle">[year]</br></p>
+                        <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        </div>
+        </a>
     </div>
+</div>
+<!-- Daily art -->
 
     <div class="container section" name="daily">
+
+      <div class="container margin">
+        <h4>Artist of the day</h4>
+        <div class="card horizontal-card mb-4">
+          <div class="row no-gutters">
+            <!-- Image Column -->
+             <a href="https://www.inkwellillustrations.com/"></a>
+              <div class="col-md-6">
+                 <img src="https://cdnb.artstation.com/p/assets/images/images/060/798/821/large/dustin-panzino-artstation.jpg?1679346622" class="card-img" alt="Card image">
+          </div>
+      
+      <!-- Content Column -->
+          <div class="col-md-6">
+             <div class="card-body">
+                 <h3 class="card-title h3-text">Inkwell</h3>
+                   <h6 class="card-subtitle mb-2 text-muted subtitle">inkwellillustrations.com</h6>
+                   <p class="card-text">Dustin is a freelance illustrator and, visual development artist currently working in the gaming industry based in L.A. His work revolves around eccentric and foggy visuals unified with strong shape language and the use of colors. Also known as Inkwell online, runs a marketing channel on Youtube freely available to inspiring artists looking to start their art career.</p>
+              <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+                  </div>
+           </div>
+       </div>
+  </div>
+</div>
+
   <div class="row">
     <!-- Left Column (Portfolio) -->
     <div class="col-12 col-lg-6 d-flex flex-column">
@@ -45,10 +83,13 @@
           <img class="card-img-top" style="height: 400px; object-fit: cover;" src="https://images.squarespace-cdn.com/content/v1/5615750ce4b07a171ef2dcc9/1718515863697-X1PAA1J62J276486J7A5/Moar+Sketches+69+copy.jpg?format=2500w">
           <div class="card-body px-0 pt-2 pb-1"> <!-- Tight padding -->
             <h5 class="card-title mb-1">Sulamoon</h5>
-            <p class="card-subtitle text-muted mb-0">Sulamoon.com</p> <!-- Zero margin bottom -->
+            <p class="card-subtitle text-muted mb-0 subtitle">Sulamoon.com</p> <!-- Zero margin bottom -->
           </div>
           <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0"> <!-- Tight footer -->
-            <button class="btn btn-outline-primary">Collect</button>
+            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
           </div>
         </a>
       </div>
@@ -62,10 +103,13 @@
           <img class="card-img-top" style="height: 400px; object-fit: cover;" src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200_webp/e1036a218603017.67a3f0dacb9d4.jpg">
           <div class="card-body px-0 pt-2 pb-1">
             <h5 class="card-title mb-1">3D Watercolor Sculpture of a Luopan Compass</h5>
-            <p class="card-subtitle text-muted mb-0">Marija Tiurina</p>
+            <p class="card-subtitle text-muted mb-0 subtitle">Marija Tiurina</p>
           </div>
           <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
+            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
           </div>
         </a>
       </div>
@@ -73,80 +117,175 @@
   </div>
 </div>
        
+ <!-- Recommendations -->
+<div class="container section" name="recommended">
+    <h2 class="section-title">Recommendations</h2>
+<!-- Article Card with Image on Left -->
+<div class="row">
+    <div class="col-12">
+        <h4 class="mb-3">Article</h4>
+        <div class="card mb-4 article-card">
+            <div class="row no-gutters h-100">
+                <!-- Image Column -->
+                <div class="col-md-4 article-image-container">
+                    <a href="https://www.brushworkatelier.com/blog/2018/12/4/sketchbooks" target="_blank" class="d-block h-100">
+                        <img src="https://images.squarespace-cdn.com/content/v1/558f3504e4b05e44b9b91199/1543961126661-9TM9VBW9SCDUEVQ8V9HP/URIBE-1.jpg?format=2500w" 
+                             alt="Sketchbook article" 
+                             class="img-fluid w-100 h-100">
+                    </a>
+                </div>
+                <!-- Content Column -->
+                <div class="col-md-8 d-flex flex-column">
+                    <div class="card-body article-content ps-3"> <!-- Added ps-3 for 16px left padding -->
+                        <h5 class="card-title">Sketchbooks - Encontrando quem você é como artista</h5>
+                        <p class="card-subtitle text-muted mb-2 subtitle">Brushwork Atelier</p>
+                        <p>Insights sobre processo criativo, conexão emocional com a arte e a importância de praticar sem medo.</p>
+                        <div class="mt-auto">
+                            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+                                <i class="bi bi-heart collect-icon"></i>
+                                <span class="btn-text"> Collect</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-    </div>
-    <div class="container section" name="recommended">
-        <h2 class="section-title">Recommendations</h2>
-            <div class="container section" name="section-name">
-  <div class="row">
-    <!-- Column 1 -->
-    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column">
-      <h4 class="mb-3">Article</h4>
-      <div class="card flex-grow-1 mb-4">
-        <a href="YOUR_LINK" target="_blank" class="text-decoration-none d-flex flex-column h-100">
-          <img class="card-img-top img-fluid" 
-               style="object-fit: cover; height: 200px; max-height: 100%;"
-               src="IMAGE_URL"
-               alt="Card image">
-          <div class="card-body px-0 pt-2 pb-1">
-            <h5 class="card-title mb-1">Card Title</h5>
-            <p class="card-subtitle text-muted mb-0">Subtitle Text</p>
-          </div>
-          <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
-          </div>
-        </a>
-      </div>
-    </div>
+        <!-- Second Row - Two cards side by side -->
+        <div class="row">
+            <!-- Content Creator Card -->
+            <div class="col-12 col-md-6 d-flex flex-column">
+                <h4 class="mb-3">Content Creator</h4>
+                <div class="card flex-grow-1 mb-4">
+                    <a href="YOUR_LINK" target="_blank" class="text-decoration-none d-flex flex-column h-100">
+                        <img class="card-img-top img-fluid" 
+                             style="object-fit: cover; height: 200px; max-height: 100%;"
+                             src="IMAGE_URL"
+                             alt="Card image">
+                        <div class="card-body px-0 pt-2 pb-1">
+                            <h5 class="card-title mb-1">Creator Name</h5>
+                            <p class="card-subtitle text-muted mb-0 subtitle">Creator Description</p>
+                        </div></a>
+                        <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
+                            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+                        </div>
+                    
+                </div>
+            </div>
 
-    <!-- Column 2 -->
-    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column">
-      <h4 class="mb-3">Content Creator</h4>
-      <div class="card flex-grow-1 mb-4">
-        <a href="YOUR_LINK" target="_blank" class="text-decoration-none d-flex flex-column h-100">
-          <img class="card-img-top img-fluid" 
-               style="object-fit: cover; height: 200px; max-height: 100%;"
-               src="IMAGE_URL"
-               alt="Card image">
-          <div class="card-body px-0 pt-2 pb-1">
-            <h5 class="card-title mb-1">Card Title</h5>
-            <p class="card-subtitle text-muted mb-0">Subtitle Text</p>
-          </div>
-          <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
-          </div>
-        </a>
-      </div>
+            <!-- Inspiration Card -->
+            <div class="col-12 col-md-6 d-flex flex-column">
+                <h4 class="mb-3">Inspiration</h4>
+                <div class="card flex-grow-1 mb-4">
+                    <a href="YOUR_LINK" target="_blank" class="text-decoration-none d-flex flex-column h-100">
+                        <img class="card-img-top img-fluid" 
+                             style="object-fit: cover; height: 200px; max-height: 100%;"
+                             src="IMAGE_URL"
+                             alt="Card image">
+                        <div class="card-body px-0 pt-2 pb-1">
+                            <h5 class="card-title mb-1">Inspiration Title</h5>
+                            <p class="card-subtitle text-muted mb-0 subtitle">Inspiration Source</p>
+                        </div></a>
+                        <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
+                            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Column 3 -->
-    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column">
-      <h4 class="mb-3">Inspiration</h4>
-      <div class="card flex-grow-1 mb-4">
-        <a href="YOUR_LINK" target="_blank" class="text-decoration-none d-flex flex-column h-100">
-          <img class="card-img-top img-fluid" 
-               style="object-fit: cover; height: 200px; max-height: 100%;"
-               src="IMAGE_URL"
-               alt="Card image">
-          <div class="card-body px-0 pt-2 pb-1">
-            <h5 class="card-title mb-1">Card Title</h5>
-            <p class="card-subtitle text-muted mb-0">Subtitle Text</p>
-          </div>
-          <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
 </div>
-    </div>
 
-
+<!--Study corner -->
     <div class="container section" name="study-corner">
         <h2 class="section-title">Study Corner</h2>
-            <div class="container section" name="section-name">
+
+<!--Prompts-->
+<h4>Prompts of the day</h4>
+<div class="container tabs-container">
+  <div class="tabs-header">
+    <button class="btn tab-btn active" data-tab="project">Project</button>
+    <button class="btn tab-btn" data-tab="study">Study</button>
+    <button class="btn tab-btn" data-tab="scene">Scene</button>
+    <button class="btn tab-btn" data-tab="character">Character</button>
+    <button class="btn tab-btn" data-tab="props">Props</button>
+  </div>
+  
+  <div class="tab-content active" id="project-tab">
+    <p class="prompt-text">Project prompts and content</p>
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+  
+  <div class="tab-content" id="study-tab">
+    <p class="prompt-text">Study prompts and content</p>
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+  
+  <div class="tab-content" id="scene-tab">
+    <p class="prompt-text">Scene prompts and content</p>
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+  
+  <div class="tab-content" id="character-tab">
+    <p class="prompt-text">Character prompts and content</p>
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+  
+  <div class="tab-content" id="props-tab">
+    <p class=" prompt-text">Props prompts and content</p>
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+</div>
+
+<script>
+// This will ensure the code only runs once
+if (!window.tabsInitialized) {
+  window.tabsInitialized = true;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active classes
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Activate clicked tab
+        const tabId = button.getAttribute('data-tab');
+        button.classList.add('active');
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+  });
+}
+</script>
+
+<!--tutorials-->
   <div class="row">
     <!-- Column 1 -->
     <div class="col-12 col-lg-6 d-flex flex-column">
@@ -156,12 +295,14 @@
           <img class="card-img-top" style="height: 400px; object-fit: cover;" src="IMAGE_URL">
           <div class="card-body px-0 pt-2 pb-1">
             <h5 class="card-title mb-1">Card Title</h5>
-            <p class="card-subtitle text-muted mb-0">Subtitle Text</p>
-          </div>
+          </div></a>
           <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
+            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
           </div>
-        </a>
+        
       </div>
     </div>
 
@@ -173,28 +314,145 @@
           <img class="card-img-top" style="height: 400px; object-fit: cover;" src="IMAGE_URL">
           <div class="card-body px-0 pt-2 pb-1">
             <h5 class="card-title mb-1">Card Title</h5>
-            <p class="card-subtitle text-muted mb-0">Subtitle Text</p>
-          </div>
+          </div></a>
           <div class="card-footer bg-transparent px-0 pt-1 pb-2 border-top-0">
-            <button class="btn btn-outline-primary">Collect</button>
+            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
           </div>
-        </a>
+        
       </div>
     </div>
   </div>
 </div>
+
+<!-- References -->
+<div class="container margin">
+  <h4 class="mb-3">References of the day</h4>
+  <div class="image-grid-container spacing">
+    <!-- First Row -->
+    <div class="row g-2 mb-3"> <!-- Added mb-3 for row gap -->
+      <div class="col-12 col-md-6">
+        <a href="https://unsplash.com/photos/a-river-flows-through-a-dark-barren-landscape-mnEdd_OAX9s" target="_blank" class="image-link">
+          <div class="image-wrapper-square">
+            <img src="https://images.unsplash.com/photo-1743014379226-a3189c8f4a84?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                 alt="Reference 1" 
+                 class="img-fill">
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-12 col-md-6">
+        <a href="https://unsplash.com/photos/a-woman-in-red-with-projected-chinese-characters-qY9wYZMeYF4" target="_blank" class="image-link">
+          <div class="image-wrapper-square">
+            <img src="https://images.unsplash.com/photo-1743890286640-b110f4e932e4?w=800&auto=format&fit=crop" 
+                 alt="Reference 2" 
+                 class="img-fill">
+          </div>
+        </a>
+      </div>
     </div>
+    
+    <!-- Second Row -->
+    <div class="row g-2"> <!-- No bottom margin on last row -->
+      <div class="col-12 col-md-4">
+        <a href="https://unsplash.com/photos/a-winding-road-weaves-through-rice-fields-KU9D4Sz6IDY" target="_blank" class="image-link">
+          <div class="image-wrapper-square">
+            <img src="https://images.unsplash.com/photo-1743485754031-a674557a83cf?w=800&auto=format&fit=crop" 
+                 alt="Reference 3" 
+                 class="img-fill">
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-12 col-md-4">
+        <a href="https://unsplash.com/photos/a-cake-with-cherries-is-on-display-lCIBu4kQmmU" target="_blank" class="image-link">
+          <div class="image-wrapper-square">
+            <img src="https://plus.unsplash.com/premium_photo-1741194731888-cca7bbc05549?w=800&auto=format&fit=crop" 
+                 alt="Reference 4" 
+                 class="img-fill">
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-12 col-md-4">
+        <a href="https://unsplash.com/photos/a-man-standing-in-a-field-of-sunflowers-16ZUFFYQdbo" target="_blank" class="image-link">
+          <div class="image-wrapper-square">
+            <img src="https://images.unsplash.com/photo-1726549384638-e530b978ac3e?w=800&auto=format&fit=crop" 
+                 alt="Reference 5" 
+                 class="img-fill">
+          </div>
+        </a>
+      </div>
+    </div>
+    <p>For full-sized pictures, please click on the images to go to their original website :)</p>
+    
+    <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
+  </div>
+</div>
 
+</div>
+</div>
+</div>
 
+<div class="spacing"></div>
+
+<!--Fortune cookie-->
     <div class="container-fluid section color-section" name="fortune-cookie">
         <div class="container">
             <h4>Fortune cookie &#129376;</h4> 
             <p name="quote">You don't need to be great to start, but you need to start to be great.</p>
-            <p class="bold">&mdash;[author]</p>
-            <button class="btn btn-outline-primary">Collect</button>
+            <p class="bold-text">&mdash;[author]</p>
+            <button class="btn btn-outline-primary collect-btn" data-collected="false">
+  <i class="bi bi-heart collect-icon"></i>
+  <span class="btn-text"> Collect</span>
+</button>
         </div>
     </div>
+
+  <script>
+    // Toggle functionality
+document.querySelectorAll('.collect-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const isCollected = this.getAttribute('data-collected') === 'true';
+    const icon = this.querySelector('.collect-icon');
+    
+    this.setAttribute('data-collected', !isCollected);
+    icon.classList.toggle('bi-heart');
+    icon.classList.toggle('bi-heart-fill');
+    this.querySelector('.btn-text').textContent = isCollected ? ' Collect' : ' Collected';
+    
+    // Save state if needed
+    const itemId = this.closest('[data-item-id]')?.getAttribute('data-item-id');
+    if (itemId) localStorage.setItem(`collected_${itemId}`, !isCollected);
+  });
+
+  // Load saved state on page load
+  const itemId = button.closest('[data-item-id]')?.getAttribute('data-item-id');
+  if (itemId && localStorage.getItem(`collected_${itemId}`) === 'true') {
+    button.setAttribute('data-collected', 'true');
+    button.querySelector('.collect-icon').classList.replace('bi-heart', 'bi-heart-fill');
+    button.querySelector('.btn-text').textContent = ' Collected';
+  }
+});
+// If you MUST keep button inside <a>
+document.querySelectorAll('.collect-btn').forEach(button => {
+  button.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    // Rest of your click handler...
+  });
+});
+</script>
+<!--Footer-->
     <footer class="container-fluid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill footer-icon" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg>
         <p class="footer-caption">©2025 Sarang. All Rights Reserved.</p>
         <p class="footer-caption">Made with Figma, Django and pure willpower. Go make some art!</p>
         

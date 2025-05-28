@@ -1,0 +1,151 @@
+<html>
+      <!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="About Daily Illustration">
+  <meta name="keywords" content="Illustration, art, study, books, courses, resources">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/home/aimee/daily_illustration/bootstrap-4.0.0-dist/css/master.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <title>About</title>
+</head>
+
+<body>
+    <div class="container section" name="about">
+        <div>
+        <h1>About</h1>
+        <p class="about-text">Daily Illustration was created by Sarang, a designer and illustrator from Rio de Janeiro, Brazil. This project is for artists and art lovers—to help them discover new creators and find tools that sharpen their skills (and their passion).
+I’ve always loved art, but I also love organizing things. <br>Artists deserve to focus on creating, not wasting time digging through scattered resources. Whenever I studied or looked for inspiration, I noticed how everything was spread all over the internet. That’s why I built this: one place for useful tools, articles, and curated art.
+It started as a portfolio piece, but it took on a life of its own. Even though it’s run by just me, I want to keep it free and accessible. If you enjoy what you find here and want to support the project, donations are always appreciated!</br></p>
+</div>
+
+    <div class="no-padding" name="links">
+      <!-- Social Media & Donate Section -->
+<div class="my-5 py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 text-center">
+      
+      <!-- Social Icons - 40px with 16px spacing -->
+      <div class="social-icons-container">
+        <!-- Website -->
+        <a href="https://yourwebsite.com" target="_blank" class="social-icon">
+          <i class="bi bi-globe"></i>
+        </a>
+        
+        <!-- Instagram -->
+        <a href="https://instagram.com/yourprofile" target="_blank" class="social-icon">
+          <i class="bi bi-instagram"></i>
+        </a>
+        
+        <!-- Cara -->
+        <a href="https://cara.app/yourprofile" target="_blank" class="social-icon">
+          <i class="bi bi-palette-fill"></i>
+        </a>
+      </div>
+      
+      <!-- Donate Button -->
+      <button class="btn btn-outline-primary donate-btn mt-4">
+        <i class="bi bi-chat-heart-fill me-2"></i>
+        Donate
+      </button>
+    </div>
+  </div>
+</div>
+
+ </div>
+
+
+</div>
+    <div class="container-fluid no-padding" name="img-carousel">
+      <div class="container-fluid px-0">
+  <div class="image-carousel" id="artCarousel">
+    <div class="carousel-track">
+      <!-- Add your images - minimum 4 for good scrolling -->
+      <div class="carousel-slide">
+        <img src="image1.jpg" alt="Artwork" class="carousel-img">
+      </div>
+      <div class="carousel-slide">
+        <img src="image2.jpg" alt="Artwork" class="carousel-img">
+      </div>
+      <div class="carousel-slide">
+        <img src="image3.jpg" alt="Artwork" class="carousel-img">
+      </div>
+      <div class="carousel-slide">
+        <img src="image4.jpg" alt="Artwork" class="carousel-img">
+      </div>
+    </div>
+  </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const carousel = document.getElementById('artCarousel');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  // Mouse/touch events
+  carousel.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+    carousel.style.cursor = 'grabbing';
+  });
+
+  carousel.addEventListener('mouseleave', () => {
+    isDown = false;
+    carousel.style.cursor = 'grab';
+  });
+
+  carousel.addEventListener('mouseup', () => {
+    isDown = false;
+    carousel.style.cursor = 'grab';
+  });
+
+  carousel.addEventListener('mousemove', (e) => {
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll multiplier
+    carousel.scrollLeft = scrollLeft - walk;
+  });
+
+  // Touch events
+  carousel.addEventListener('touchstart', (e) => {
+    isDown = true;
+    startX = e.touches[0].pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+  });
+
+  carousel.addEventListener('touchend', () => {
+    isDown = false;
+  });
+
+  carousel.addEventListener('touchmove', (e) => {
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.touches[0].pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 2;
+    carousel.scrollLeft = scrollLeft - walk;
+  });
+});
+</script>
+
+    </div>
+
+    <footer class="container-fluid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill footer-icon" viewBox="0 0 16 16">
+  <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
+</svg>
+        <p class="footer-caption">©2025 Sarang. All Rights Reserved.</p>
+        <p class="footer-caption">Made with Figma, Django and pure willpower. Go make some art!</p>
+        
+    </footer>
+
+</body>
+
+
+
+</html>
