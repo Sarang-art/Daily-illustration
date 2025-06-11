@@ -14,43 +14,52 @@
 
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" style="height: 60px;">
-  <div class="container">
-    <!-- Brand/logo would go here -->
-    
-    <!-- Mobile toggle button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+ <!-- Desktop Navbar -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/home/aimee/daily_illustration/html/home.html">Home</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Collection.html">Collection</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Blog.html">Blog</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Resources.html">Resources</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Archive.html">Archive</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/About.html">About</a></li>
+            <li><a href="html/Submit.html">Submit</a></li>
+        </ul>
+    </nav>
 
-    <!-- Nav links -->
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto" style="gap: 32px;">
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Collection</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Blog</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Resources</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Archive</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" >Submit</a>
-        </li>
-      </ul>
+    <!-- Mobile Navbar -->
+<nav class="mobile-navbar">
+    <div class="menu-icon" id="menuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
     </div>
-  </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="close-btn-container">
+                <div class="menu-icon" id="closeMenu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="mobile-menu-title">
+                <h3>DAILY ILLUSTRATION</h3>
+                <p id="currentDate"></p>
+            </div>
+        </div>
+
+        <ul class="mobile-nav-links">
+           <li><a href="/home/aimee/daily_illustration/html/home.html">Home</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Collection.html">Collection</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Blog.html">Blog</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Resources.html">Resources</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/Archive.html">Archive</a></li>
+            <li><a href="/home/aimee/daily_illustration/html/About.html">About</a></li>
+            <li><a href="html/Submit.html">Submit</a></li>
+        </ul>
+    </div>
 </nav>
 
 
@@ -307,30 +316,7 @@
   </div>
 </div>
 
-<script>
-// This will ensure the code only runs once
-if (!window.tabsInitialized) {
-  window.tabsInitialized = true;
-  
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active classes
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Activate clicked tab
-        const tabId = button.getAttribute('data-tab');
-        button.classList.add('active');
-        document.getElementById(`${tabId}-tab`).classList.add('active');
-      });
-    });
-  });
-}
-</script>
+
 
 <!--tutorials-->
   <div class="row">
@@ -461,40 +447,7 @@ if (!window.tabsInitialized) {
         </div>
     </div>
 
-  <script>
-    // Toggle functionality
-document.querySelectorAll('.collect-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const isCollected = this.getAttribute('data-collected') === 'true';
-    const icon = this.querySelector('.collect-icon');
-    
-    this.setAttribute('data-collected', !isCollected);
-    icon.classList.toggle('bi-heart');
-    icon.classList.toggle('bi-heart-fill');
-    this.querySelector('.btn-text').textContent = isCollected ? ' Collect' : ' Collected';
-    
-    // Save state if needed
-    const itemId = this.closest('[data-item-id]')?.getAttribute('data-item-id');
-    if (itemId) localStorage.setItem(`collected_${itemId}`, !isCollected);
-  });
-
-  // Load saved state on page load
-  const itemId = button.closest('[data-item-id]')?.getAttribute('data-item-id');
-  if (itemId && localStorage.getItem(`collected_${itemId}`) === 'true') {
-    button.setAttribute('data-collected', 'true');
-    button.querySelector('.collect-icon').classList.replace('bi-heart', 'bi-heart-fill');
-    button.querySelector('.btn-text').textContent = ' Collected';
-  }
-});
-// If you MUST keep button inside <a>
-document.querySelectorAll('.collect-btn').forEach(button => {
-  button.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    // Rest of your click handler...
-  });
-});
-</script>
+  
 <!--Footer-->
     <footer class="container-fluid">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill footer-icon" viewBox="0 0 16 16">
@@ -504,7 +457,10 @@ document.querySelectorAll('.collect-btn').forEach(button => {
         <p class="footer-caption">Made with Figma, Django and pure willpower. Go make some art!</p>
         
     </footer>
-    
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
 </body>
 
 </html>
