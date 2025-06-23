@@ -55,6 +55,22 @@ document.querySelectorAll('.collect-btn').forEach(button => {
 });
 
 
+// Wait for DOM to be loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Find all buttons inside color-section
+  const buttonsInColorSections = document.querySelectorAll('.color-section button');
+  
+  // Apply white color to each button
+  buttonsInColorSections.forEach(button => {
+    button.style.color = 'white';
+    // Add other style changes if needed
+    button.style.backgroundColor = 'transparent';
+    button.style.borderColor = 'white';
+  });
+});
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu functionality
     const menuToggle = document.getElementById('menuToggle');

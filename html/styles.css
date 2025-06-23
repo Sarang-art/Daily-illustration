@@ -369,6 +369,14 @@ body.menu-open {
   border-color: black;
 }
 
+.color-section button {
+  color: white;
+  /* If you also want to change the background color */
+  background-color: transparent;
+  /* If you need to override any border colors */
+  border-color: white;
+}
+
 /* Focus state */
 .collect-btn:focus {
   box-shadow: none;
