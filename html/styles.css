@@ -3,7 +3,7 @@
 /* ===================== */
 @font-face {
   font-family: 'DMSans';
-  src: url('../resources/fonts/DMSans-VariableFont_opsz,wght.woff') format('woff');
+  src: url('/home/aimee/Projetos/daily_illustration/resources/fonts/DMSans-VariableFont_opsz,wght.woff') format('woff');
   font-weight: 100 900;
   font-style: normal;
 }
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: nyghtserif;
-  src: url(/home/aimee/daily_illustration/resources/fonts/nyghtserif-medium.woff);
+  src: url(/home/aimee/Projetos/daily_illustration/resources/fonts/nyghtserif-medium.woff);
 }
 
 /* ================= */
