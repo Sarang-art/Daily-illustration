@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Entries Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            display: grid;
+            gap: 10px;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .entries {
+            max-width: 800px;
+            margin: 30px auto;
+        }
+        .entry {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .entry img {
+            max-width: 100px;
+            display: block;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            input, select, button {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Art Entries Manager</h1>
+    <form id="entryForm">
+        <input type="text" id="name" placeholder="Name of the piece" required>
+        <input type="text" id="author" placeholder="Author" required>
+        <input type="text" id="media" placeholder="Media" required>
+        <input type="number" id="year" placeholder="Year" required>
+        <input type="url" id="link" placeholder="Link to original" required>
+        <input type="url" id="image" placeholder="Image URL" required>
+        <input type="text" id="country" placeholder="Country" required>
+        <input type="text" id="keywords" placeholder="Keywords (comma-separated)" required>
+        <label>Minorities checklist:</label>
+        <label><input type="checkbox" id="women"> Women</label>
+        <label><input type="checkbox" id="nb"> Non-binary</label>
+        <label><input type="checkbox" id="asian"> Asian</label>
+        <label><input type="checkbox" id="black"> Black</label>
+        <label><input type="checkbox" id="disabled"> Disabled</label>
+        <button type="submit">Add Entry</button>
+        <button type="button" id="exportBtn">Export JSON</button>
+        <input type="file" id="importFile" accept=".json">
+    </form>
+    <div class="entries" id="entriesList"></div>
+
+    <script>
+        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+
+        function saveEntries() {
+            localStorage.setItem('entries', JSON.stringify(entries));
+        }
+
+        function renderEntries() {
+            const list = document.getElementById('entriesList');
+            list.innerHTML = '';
+            entries.forEach((entry, index) => {
+                const div = document.createElement('div');
+                div.className = 'entry';
+                div.innerHTML = `
+                    <strong>${entry.name}</strong> by ${entry.author} (${entry.year})<br>
+                    Media: ${entry.media}<br>
+                    Country: ${entry.country}<br>
+                    Keywords: ${entry.keywords.join(', ')}<br>
+                    Minorities: ${entry.minorities.join(', ')}<br>
+                    <a href="${entry.link}" target="_blank">Original Link</a><br>
+                    <img src="${entry.image}" alt="${entry.name}">
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        document.getElementById('entryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const entry = {
+                name: document.getElementById('name').value,
+                author: document.getElementById('author').value,
+                media: document.getElementById('media').value,
+                year: document.getElementById('year').value,
+                link: document.getElementById('link').value,
+                image: document.getElementById('image').value,
+                country: document.getElementById('country').value,
+                keywords: document.getElementById('keywords').value.split(',').map(k => k.trim()),
+                minorities: [
+                    document.getElementById('women').checked ? 'Women' : null,
+                    document.getElementById('nb').checked ? 'Non-binary' : null,
+                    document.getElementById('asian').checked ? 'Asian' : null,
+                    document.getElementById('black').checked ? 'Black' : null,
+                    document.getElementById('disabled').checked ? 'Disabled' : null
+                ].filter(Boolean)
+            };
+            entries.push(entry);
+            saveEntries();
+            renderEntries();
+            this.reset();
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'entries.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        entries = [...entries, ...imported];
+                        saveEntries();
+                        renderEntries();
+                    }
+                } catch (err) {
+                    alert('Invalid JSON file');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        renderEntries();
+    </script>
+</body>
+</html>

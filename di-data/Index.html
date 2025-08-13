@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What would you like to add?</title>
+  <style>
+    :root {
+      --bg: #ffe8ff;
+      --card: #ffffff;
+      --muted: #6c757d;
+      --text: #212529;
+      --accent: #f728dc;
+      --border: #e0c0e0;
+      --chip: #f8e8f8;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 20px;
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin: 0 0 10px;
+      color: #800080;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(247, 40, 220, 0.1);
+      border-color: var(--accent);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 1.4rem;
+    }
+    .card p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>What would you like to add?</h1>
+      <p class="sub">Choose a category to manage your creative collections</p>
+    </header>
+
+    <main>
+      <div class="grid">
+        <a href="art.html" class="card">
+          <div class="icon">🎨</div>
+          <h2>Art</h2>
+          <p>Catalog your favorite artworks and visual pieces</p>
+        </a>
+
+        <a href="artist.html" class="card">
+          <div class="icon">👩‍🎨</div>
+          <h2>Artist</h2>
+          <p>Track artists and creators you admire</p>
+        </a>
+
+        <a href="portfolio.html" class="card">
+          <div class="icon">📂</div>
+          <h2>Portfolio</h2>
+          <p>Organize your own creative portfolio pieces</p>
+        </a>
+
+        <a href="project.html" class="card">
+          <div class="icon">📋</div>
+          <h2>Project</h2>
+          <p>Manage your ongoing and future projects</p>
+        </a>
+
+        <a href="article.html" class="card">
+          <div class="icon">📰</div>
+          <h2>Article</h2>
+          <p>Save and categorize interesting articles</p>
+        </a>
+
+        <a href="content-creator.html" class="card">
+          <div class="icon">📹</div>
+          <h2>Content Creator</h2>
+          <p>Keep track of influencers and creators</p>
+        </a>
+
+        <a href="media-inspiration.html" class="card">
+          <div class="icon">💡</div>
+          <h2>Media Inspiration</h2>
+          <p>Store inspiring media and references</p>
+        </a>
+
+        <a href="prompt.html" class="card">
+          <div class="icon">✍️</div>
+          <h2>Prompt</h2>
+          <p>Collect creative prompts and ideas</p>
+        </a>
+
+        <a href="tutorial.html" class="card">
+          <div class="icon">🎓</div>
+          <h2>Tutorial</h2>
+          <p>Organize helpful tutorials and guides</p>
+        </a>
+
+        <a href="palette.html" class="card">
+          <div class="icon">🌈</div>
+          <h2>Palette</h2>
+          <p>Save color schemes and combinations</p>
+        </a>
+
+        <a href="references.html" class="card">
+          <div class="icon">📚</div>
+          <h2>References</h2>
+          <p>Maintain a reference library</p>
+        </a>
+
+        <a href="quotes.html" class="card">
+          <div class="icon">💬</div>
+          <h2>Quotes</h2>
+          <p>Collect inspiring quotes and sayings</p>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <p>Your creative management system • All in one place</p>
+    </footer>
+  </div>
+</body>
+</html>

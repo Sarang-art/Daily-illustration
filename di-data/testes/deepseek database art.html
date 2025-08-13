@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Art & Media Entries — Minimal JSON Saver</title>
+  <style>
+    :root {
+      --bg: #ffe8ff; /* Light pink background */
+      --card: #ffffff;
+      --muted: #6c757d;
+      --text: #212529;
+      --accent: #f728dc; /* Pink accent */
+      --border: #e0c0e0;
+      --chip: #f8e8f8;
+      --danger: #dc3545;
+      --focus: #f728dc;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      padding: 28px 20px 12px;
+      position: sticky; top: 0; backdrop-filter: saturate(1.2) blur(8px);
+      background: linear-gradient(180deg, rgba(255,232,255,0.85), rgba(255,232,255,0.6) 70%, rgba(255,232,255,0));
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    h1 { margin: 0; font-size: 1.5rem; letter-spacing: 0.2px; }
+    .sub { color: var(--muted); font-size: 0.95rem; }
+
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .btn {
+      appearance: none; border: 1px solid var(--border); background: #f8e8f8; color: var(--text);
+      padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 550;
+      transition: transform .04s ease, border-color .2s ease;
+    }
+    .btn:hover { border-color: #d8a0d8; background: #f0d8f0; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: linear-gradient(180deg, #f8e0f8, #f0d0f0); border-color: #e0c0e0; }
+    .btn.accent { background: #ffd0ff; border-color: var(--accent); color: #800080; }
+    .btn.danger { background: #f8d7da; border-color: #f1aeb5; color: #58151c; }
+
+    main { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 18px 0 40px; }
+    @media (min-width: 980px) {
+      main { grid-template-columns: 400px 1fr; align-items: start; }
+    }
+
+    form { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    fieldset { border: none; padding: 0; margin: 0; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 600px) {
+      .grid.two { grid-template-columns: 1fr 1fr; }
+    }
+
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], input[type="url"], input[type="number"], input[type="search"], textarea, select {
+      width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: white; color: var(--text); outline: none; transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(247,40,220,0.15); }
+    textarea { min-height: 80px; resize: vertical; }
+    .minorities { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .check { display: flex; gap: 8px; align-items: center; padding: 10px 10px; border: 1px solid var(--border); border-radius: 12px; background: white; }
+    .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+    .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .list-head { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
+    .count { color: var(--muted); font-size: 0.9rem; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: white; display: flex; flex-direction: column; }
+    .thumb { aspect-ratio: 4/3; width: 100%; object-fit: cover; background: #f8f0f8; }
+    .card-b { padding: 12px; display: grid; gap: 8px; }
+    .title { font-weight: 650; font-size: 1rem; line-height: 1.2; }
+    .meta { color: var(--muted); font-size: 0.85rem; display: flex; gap: 8px; flex-wrap: wrap; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { background: var(--chip); border: 1px solid var(--border); padding: 4px 8px; border-radius: 999px; font-size: 0.75rem; color: #495057; }
+    .minority-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag { font-size: 0.72rem; padding: 3px 7px; border-radius: 999px; border: 1px solid #ffc0ff; background: #ffe0ff; color: #800080; }
+
+    .card-actions { display: flex; gap: 6px; margin-top: 2px; }
+
+    .empty { color: var(--muted); text-align: center; padding: 28px 0; border: 1px dashed var(--border); border-radius: 12px; }
+
+    .note { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+
+    .toast { position: fixed; right: 16px; bottom: 18px; background: #ffd0ff; color: #800080; border: 1px solid var(--accent); padding: 10px 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.1); opacity: 0; transform: translateY(6px); transition: .3s ease; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .help-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .file-input { position: relative; overflow: hidden; }
+    .file-input input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Art & Media Entries</h1>
+      <div class="sub">A single-file app to capture entries and export/import as JSON. Data persists locally.</div>
+      <div class="toolbar">
+        <button class="btn primary" id="exportBtn" title="Download all entries as JSON">Export JSON</button>
+        <label class="btn" id="importLabel">
+          <span class="file-input">Import JSON
+            <input type="file" id="importInput" accept="application/json" />
+          </span>
+        </label>
+        <button class="btn" id="clearBtn" title="Remove all local data">Clear All (Local)</button>
+        <input type="search" id="search" placeholder="Search by title, author, keyword, country…" aria-label="Search entries" />
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add New Entry</h2>
+        <form id="entryForm">
+          <fieldset class="grid">
+            <div>
+              <label for="name">Name of the piece *</label>
+              <input id="name" name="name" type="text" required placeholder="e.g., The Persistence of Memory" />
+            </div>
+            <div>
+              <label for="author">Author *</label>
+              <input id="author" name="author" type="text" required placeholder="e.g., Salvador Dalí" />
+            </div>
+            <div class="grid two">
+              <div>
+                <label for="media">Media</label>
+                <input id="media" name="media" type="text" placeholder="e.g., Oil on canvas, Film, Sculpture…" />
+              </div>
+              <div>
+                <label for="year">Year</label>
+                <input id="year" name="year" type="number" inputmode="numeric" placeholder="e.g., 1931" />
+              </div>
+            </div>
+            <div class="grid two">
+              <div>
+                <label for="link">Link to original</label>
+                <input id="link" name="link" type="url" placeholder="https://example.com" />
+              </div>
+              <div>
+                <label for="image">Image URL</label>
+                <input id="image" name="image" type="url" placeholder="https://…/image.jpg" />
+              </div>
+            </div>
+            <div class="grid two">
+              <div>
+                <label for="country">Country</label>
+                <input id="country" name="country" type="text" placeholder="e.g., Spain" />
+              </div>
+              <div>
+                <label for="keywords">Keywords (comma‑separated)</label>
+                <input id="keywords" name="keywords" type="text" placeholder="surrealism, clocks, dreamlike" />
+              </div>
+            </div>
+            <div>
+              <label>Minorities checklist</label>
+              <div class="minorities">
+                <label class="check"><input type="checkbox" id="m_women"/> Women</label>
+                <label class="check"><input type="checkbox" id="m_nb"/> Non-binary</label>
+                <label class="check"><input type="checkbox" id="m_asian"/> Asian</label>
+                <label class="check"><input type="checkbox" id="m_black"/> Black</label>
+                <label class="check"><input type="checkbox" id="m_disabled"/> Disabled</label>
+              </div>
+            </div>
+          </fieldset>
+          <div class="actions">
+            <button type="reset" class="btn">Reset</button>
+            <button type="submit" class="btn accent">Add Entry</button>
+          </div>
+          <p class="note">Your entries are saved in your browser (localStorage). Use <em>Export JSON</em> to save a file. Use <em>Import JSON</em> to merge existing data.</p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Entries</h2>
+          <div class="count" id="count">0 items</div>
+        </div>
+        <div id="cards" class="cards" aria-live="polite"></div>
+        <div id="empty" class="empty" hidden>No entries yet. Add your first one on the left!</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // --- Storage helpers ---
+    const STORAGE_KEY = 'artEntries.v1';
+    const $ = (sel, root = document) => root.querySelector(sel);
+
+    function loadEntries() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch { return []; }
+    }
+    function saveEntries(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    // --- UI feedback ---
+    function toast(msg) {
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    // --- Rendering ---
+    function render(entries, query = '') {
+      const cards = $('#cards');
+      const empty = $('#empty');
+      const count = $('#count');
+
+      // Filter by search query
+      const q = query.trim().toLowerCase();
+      const filtered = q ? entries.filter(e => {
+        const hay = [e.name, e.author, e.media, e.country, (e.keywords||[]).join(' ')].join(' ').toLowerCase();
+        return hay.includes(q);
+      }) : entries;
+
+      count.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
+
+      if (!filtered.length) {
+        cards.innerHTML = '';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+
+      cards.innerHTML = filtered.map(e => cardTemplate(e)).join('');
+
+      // Wire card actions
+      cards.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const idx = entries.findIndex(x => x.id === id);
+          if (idx > -1) {
+            entries.splice(idx, 1);
+            saveEntries(entries);
+            render(entries, $('#search').value);
+            toast('Entry removed');
+          }
+        });
+      });
+    }
+
+    function cardTemplate(e) {
+      const minors = [];
+      if (e.minorities?.women) minors.push('Women');
+      if (e.minorities?.nb) minors.push('Non-binary');
+      if (e.minorities?.asian) minors.push('Asian');
+      if (e.minorities?.black) minors.push('Black');
+      if (e.minorities?.disabled) minors.push('Disabled');
+
+      const img = e.image ? `<img class="thumb" alt="${escapeHtml(e.name)}" src="${escapeAttr(e.image)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+      const linkPart = e.link ? `<a href="${escapeAttr(e.link)}" target="_blank" rel="noopener" class="chip">Open original</a>` : '';
+
+      return `
+        <article class="card" aria-label="${escapeAttr(e.name)}">
+          ${img}
+          <div class="card-b">
+            <div class="title">${escapeHtml(e.name)}</div>
+            <div class="meta">${escapeHtml(e.author || 'Unknown')} ${e.year ? '• ' + escapeHtml(e.year) : ''} ${e.country ? '• ' + escapeHtml(e.country) : ''}</div>
+            ${e.media ? `<div class="meta">${escapeHtml(e.media)}</div>` : ''}
+            ${e.keywords && e.keywords.length ? `<div class="chips">${e.keywords.map(k=>`<span class="chip">${escapeHtml(k)}</span>`).join('')}</div>` : ''}
+            ${minors.length ? `<div class="minority-tags">${minors.map(m=>`<span class="tag">${m}</span>`).join('')}</div>` : ''}
+            <div class="card-actions">
+              ${linkPart}
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete entry">Delete</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function escapeHtml(str='') {
+      return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+    }
+    function escapeAttr(str='') { return escapeHtml(str); }
+
+    // --- Initialization ---
+    const state = loadEntries();
+    render(state);
+
+    // Submit handler
+    $('#entryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const entry = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        name: $('#name').value.trim(),
+        author: $('#author').value.trim(),
+        media: $('#media').value.trim(),
+        year: $('#year').value ? Number($('#year').value) : null,
+        link: $('#link').value.trim(),
+        image: $('#image').value.trim(),
+        country: $('#country').value.trim(),
+        keywords: $('#keywords').value.split(',').map(s=>s.trim()).filter(Boolean),
+        minorities: {
+          women: $('#m_women').checked,
+          nb: $('#m_nb').checked,
+          asian: $('#m_asian').checked,
+          black: $('#m_black').checked,
+          disabled: $('#m_disabled').checked,
+        }
+      };
+
+      if (!entry.name || !entry.author) {
+        toast('Please fill in required fields.');
+        return;
+      }
+
+      state.unshift(entry); // newest first
+      saveEntries(state);
+      render(state, $('#search').value);
+      (e.target).reset();
+      toast('Entry added');
+    });
+
+    // Export JSON
+    $('#exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,10);
+      a.href = url;
+      a.download = `art-entries-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast('JSON exported');
+    });
+
+    // Import JSON (merge by fingerprint of name+author+year)
+    $('#importInput').addEventListener('change', async (ev) => {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const incoming = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+        if (!incoming.length) throw new Error('No items found');
+
+        const byKey = new Map(state.map(it => [fingerprint(it), it]));
+        let added = 0;
+        for (const it of incoming) {
+          const normalized = normalizeImported(it);
+          const key = fingerprint(normalized);
+          if (!byKey.has(key)) {
+            state.push(normalized);
+            byKey.set(key, normalized);
+            added++;
+          }
+        }
+        saveEntries(state);
+        render(state, $('#search').value);
+        toast(`Imported ${added} entr${added===1?'y':'ies'}`);
+      } catch (err) {
+        console.error(err);
+        toast('Import failed: invalid JSON');
+      } finally {
+        ev.target.value = '';
+      }
+    });
+
+    function fingerprint(e) {
+      return [e.name?.toLowerCase().trim(), e.author?.toLowerCase().trim(), e.year ?? ''].join('::');
+    }
+    function normalizeImported(it) {
+      return {
+        id: it.id || crypto.randomUUID(),
+        createdAt: it.createdAt || new Date().toISOString(),
+        name: it.name || '',
+        author: it.author || '',
+        media: it.media || '',
+        year: Number.isFinite(it.year) ? it.year : (it.year ? Number(it.year) : null),
+        link: it.link || it.url || '',
+        image: it.image || it.imageUrl || '',
+        country: it.country || '',
+        keywords: Array.isArray(it.keywords) ? it.keywords : (typeof it.keywords === 'string' ? it.keywords.split(',').map(s=>s.trim()).filter(Boolean) : []),
+        minorities: {
+          women: !!(it.minorities?.women || it.women),
+          nb: !!(it.minorities?.nb || it.nb || it.nonBinary),
+          asian: !!(it.minorities?.asian || it.asian),
+          black: !!(it.minorities?.black || it.black),
+          disabled: !!(it.minorities?.disabled || it.disabled),
+        }
+      };
+    }
+
+    // Search
+    $('#search').addEventListener('input', (e) => {
+      render(state, e.target.value);
+    });
+
+    // Clear all
+    $('#clearBtn').addEventListener('click', () => {
+      if (!confirm('This will remove all entries stored locally on this browser. Continue?')) return;
+      state.splice(0, state.length);
+      saveEntries(state);
+      render(state);
+      toast('All local data cleared');
+    });
+  </script>
+</body>
+</html>

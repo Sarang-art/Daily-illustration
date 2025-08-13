@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artists Database</title>
+  <style>
+    :root {
+      --bg: #ffe8ff;
+      --card: #ffffff;
+      --muted: #6c757d;
+      --text: #212529;
+      --accent: #f728dc;
+      --border: #e0c0e0;
+      --chip: #f8e8f8;
+      --danger: #dc3545;
+      --focus: #f728dc;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      padding: 28px 20px 12px;
+      position: sticky; top: 0; backdrop-filter: saturate(1.2) blur(8px);
+      background: linear-gradient(180deg, rgba(255,232,255,0.85), rgba(255,232,255,0.6) 70%, rgba(255,232,255,0));
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    h1 { margin: 0; font-size: 1.5rem; letter-spacing: 0.2px; }
+    .sub { color: var(--muted); font-size: 0.95rem; }
+
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .btn {
+      appearance: none; border: 1px solid var(--border); background: #f8e8f8; color: var(--text);
+      padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 550;
+      transition: transform .04s ease, border-color .2s ease;
+    }
+    .btn:hover { border-color: #d8a0d8; background: #f0d8f0; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: linear-gradient(180deg, #f8e0f8, #f0d0f0); border-color: #e0c0e0; }
+    .btn.accent { background: #ffd0ff; border-color: var(--accent); color: #800080; }
+    .btn.danger { background: #f8d7da; border-color: #f1aeb5; color: #58151c; }
+    .btn.edit { background: #e0e0ff; border-color: #c0c0ff; color: #000080; }
+    .btn.undo { background: #fff0e0; border-color: #ffd0a0; color: #804000; }
+
+    main { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 18px 0 40px; }
+    @media (min-width: 980px) {
+      main { grid-template-columns: 400px 1fr; align-items: start; }
+    }
+
+    form { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    fieldset { border: none; padding: 0; margin: 0; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], input[type="url"], input[type="search"], textarea, select {
+      width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: white; color: var(--text); outline: none; transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(247,40,220,0.15); }
+
+    .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .list-head { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
+    .count { color: var(--muted); font-size: 0.9rem; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: white; display: flex; flex-direction: column; }
+    .thumb { aspect-ratio: 1/1; width: 100%; object-fit: cover; background: #f8f0f8; }
+    .card-b { padding: 12px; display: grid; gap: 8px; }
+    .title { font-weight: 650; font-size: 1rem; line-height: 1.2; }
+    .meta { color: var(--muted); font-size: 0.85rem; }
+    .about { font-size: 0.9rem; margin: 8px 0; }
+    .card-actions { display: flex; gap: 6px; margin-top: 2px; }
+
+    .empty { color: var(--muted); text-align: center; padding: 28px 0; border: 1px dashed var(--border); border-radius: 12px; }
+
+    .note { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+
+    .toast { position: fixed; right: 16px; bottom: 18px; background: #ffd0ff; color: #800080; border: 1px solid var(--accent); padding: 10px 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.1); opacity: 0; transform: translateY(6px); transition: .3s ease; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .file-input { position: relative; overflow: hidden; }
+    .file-input input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    /* Modal styles */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+    .modal-content { background: white; padding: 20px; border-radius: var(--radius); max-width: 400px; width: 90%; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    
+    /* New styles for checklist and autocomplete */
+    .details-title { font-size: 0.85rem; color: var(--muted); margin: 16px 0 8px; }
+    .checklist { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .checklist-item { display: flex; align-items: center; gap: 6px; }
+    .checklist-item input { width: auto; }
+    .checklist-item label { margin: 0; font-size: 0.9rem; color: var(--text); }
+    
+    .autocomplete-container { position: relative; }
+    .autocomplete-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0 0 12px 12px;
+      z-index: 10;
+      display: none;
+    }
+    .autocomplete-suggestions.show {
+      display: block;
+    }
+    .autocomplete-suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .autocomplete-suggestion:hover {
+      background-color: #f8e8f8;
+    }
+    
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .chip {
+      background: var(--chip);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip-remove {
+      cursor: pointer;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1>Artists Database</h1>
+          <div class="sub">Track and organize artists with portfolio links and information</div>
+        </div>
+        <button class="btn" onclick="window.location.href='Index.html'">Back to Index</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn primary" id="exportBtn" title="Download all entries as JSON">Export JSON</button>
+        <label class="btn" id="importLabel">
+          <span class="file-input">Import JSON
+            <input type="file" id="importInput" accept="application/json" />
+          </span>
+        </label>
+        <button class="btn" id="clearBtn" title="Remove all local data">Clear All (Local)</button>
+        <input type="search" id="search" placeholder="Search by artist name..." aria-label="Search entries" />
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add New Artist</h2>
+        <form id="entryForm">
+          <input type="hidden" id="editId" value="">
+          <fieldset class="grid">
+            <div>
+              <label for="artist">Artist's Name *</label>
+              <input id="artist" name="artist" type="text" required placeholder="e.g., Jane Doe" />
+            </div>
+            <div>
+              <label for="about">About the Artist</label>
+              <textarea id="about" name="about" rows="3" placeholder="Brief description of the artist's work and background"></textarea>
+            </div>
+            <div>
+              <label for="website">Website URL *</label>
+              <input id="website" name="website" type="url" required placeholder="https://example.com" />
+            </div>
+            <div>
+              <label for="thumbnail">Thumbnail Image URL</label>
+              <input id="thumbnail" name="thumbnail" type="url" placeholder="https://.../image.jpg" />
+            </div>
+            
+            <!-- New Details Section -->
+            <div>
+              <div class="details-title">Details</div>
+              <div class="checklist">
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-women" name="details" value="Women">
+                  <label for="detail-women">Women</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-black" name="details" value="Black">
+                  <label for="detail-black">Black</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-indigenous" name="details" value="Indigenous">
+                  <label for="detail-indigenous">Indigenous</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-asian" name="details" value="Asian">
+                  <label for="detail-asian">Asian</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-disabled" name="details" value="Disabled">
+                  <label for="detail-disabled">Disabled</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-lgbtqiap" name="details" value="LGBTQIAP+">
+                  <label for="detail-lgbtqiap">LGBTQIAP+</label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Country input with autocomplete -->
+            <div class="autocomplete-container">
+              <label for="country">Country</label>
+              <input id="country" name="country" type="text" placeholder="Start typing to see suggestions" />
+              <div id="country-suggestions" class="autocomplete-suggestions"></div>
+            </div>
+            
+            <!-- Keywords input with autocomplete -->
+            <div class="autocomplete-container">
+              <label for="keywords">Keywords</label>
+              <input id="keywords-input" type="text" placeholder="Type and press Enter to add keywords" />
+              <div id="keywords-suggestions" class="autocomplete-suggestions"></div>
+              <div id="keywords-chips" class="chips"></div>
+              <input type="hidden" id="keywords" name="keywords" value="">
+            </div>
+          </fieldset>
+          <div class="actions">
+            <button type="button" class="btn undo" id="undoBtn" style="display: none;">Undo Changes</button>
+            <button type="button" class="btn" id="cancelEditBtn" style="display: none;">Cancel</button>
+            <button type="reset" class="btn">Reset</button>
+            <button type="submit" class="btn accent" id="submitBtn">Add Artist</button>
+          </div>
+          <p class="note">Your entries are saved in your browser (localStorage). Use <em>Export JSON</em> to save a file. Use <em>Import JSON</em> to merge existing data.</p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Artists</h2>
+          <div class="count" id="count">0 items</div>
+        </div>
+        <div id="cards" class="cards" aria-live="polite"></div>
+        <div id="empty" class="empty" hidden>No artists yet. Add your first one on the left!</div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <p>Are you sure you want to delete this artist?</p>
+      <div class="modal-actions">
+        <button class="btn" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // --- Storage helpers ---
+    const STORAGE_KEY = 'artistEntries.v1';
+    const $ = (sel, root = document) => root.querySelector(sel);
+    let state = [];
+    let originalEntry = null; // For undo functionality
+    let entryToDelete = null; // For delete confirmation
+    
+    // Country and keyword data
+    const countries = [
+      "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", 
+      "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", 
+      "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", 
+      "Burkina Faso", "Burundi", "Côte d'Ivoire", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", 
+      "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia", 
+      "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", 
+      "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", 
+      "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Holy See", "Honduras", 
+      "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", 
+      "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", 
+      "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", 
+      "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", 
+      "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", 
+      "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", 
+      "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", 
+      "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", 
+      "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", 
+      "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", 
+      "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", 
+      "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", 
+      "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", 
+      "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    ];
+    
+    const commonKeywords = [
+      "Painting", "Sculpture", "Photography", "Digital Art", "Illustration", "Drawing", 
+      "Printmaking", "Ceramics", "Textile Art", "Mixed Media", "Performance Art", 
+      "Installation", "Video Art", "Conceptual Art", "Abstract", "Realism", 
+      "Surrealism", "Portrait", "Landscape", "Figurative", "Minimalism", 
+      "Contemporary", "Modern", "Street Art", "Graffiti", "Mural", "Collage", 
+      "Fiber Art", "Glass Art", "Jewelry", "Fashion", "Graphic Design", 
+      "Animation", "3D Modeling", "NFT", "Public Art", "Environmental Art"
+    ];
+
+    function loadEntries() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch { return []; }
+    }
+    function saveEntries(entries) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    // --- UI feedback ---
+    function toast(msg) {
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    // --- Rendering ---
+    function render(entries, query = '') {
+      const cards = $('#cards');
+      const empty = $('#empty');
+      const count = $('#count');
+
+      // Filter by search query
+      const q = query.trim().toLowerCase();
+      const filtered = q ? entries.filter(e => {
+        return e.artist.toLowerCase().includes(q) || 
+               (e.about && e.about.toLowerCase().includes(q)) ||
+               (e.keywords && e.keywords.toLowerCase().includes(q)) ||
+               (e.country && e.country.toLowerCase().includes(q)) ||
+               (e.details && e.details.toLowerCase().includes(q));
+      }) : entries;
+
+      count.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
+
+      if (!filtered.length) {
+        cards.innerHTML = '';
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+
+      cards.innerHTML = filtered.map(e => cardTemplate(e)).join('');
+
+      // Wire card actions
+      cards.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          entryToDelete = state.find(x => x.id === id);
+          if (entryToDelete) {
+            $('#deleteModal').style.display = 'flex';
+          }
+        });
+      });
+
+      // Wire edit actions
+      cards.querySelectorAll('[data-action="edit"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const entry = entries.find(x => x.id === id);
+          if (entry) {
+            editEntry(entry);
+          }
+        });
+      });
+    }
+
+    function cardTemplate(e) {
+      const img = e.thumbnail ? `<img class="thumb" alt="${escapeHtml(e.artist)}" src="${escapeAttr(e.thumbnail)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+      const linkPart = e.website ? `<a href="${escapeAttr(e.website)}" target="_blank" rel="noopener" class="btn primary">Visit Website</a>` : '';
+      
+      // Create details chips
+      let detailsChips = '';
+      if (e.details) {
+        const detailsArray = e.details.split(',').map(d => d.trim());
+        detailsChips = detailsArray.map(d => `<span class="chip">${escapeHtml(d)}</span>`).join('');
+      }
+      
+      // Create keyword chips
+      let keywordChips = '';
+      if (e.keywords) {
+        const keywordsArray = e.keywords.split(',').map(k => k.trim());
+        keywordChips = keywordsArray.map(k => `<span class="chip">${escapeHtml(k)}</span>`).join('');
+      }
+      
+      // Create country display
+      let countryDisplay = '';
+      if (e.country) {
+        countryDisplay = `<div class="meta">Country: ${escapeHtml(e.country)}</div>`;
+      }
+      
+      // Create about section
+      let aboutDisplay = '';
+      if (e.about) {
+        aboutDisplay = `<div class="about">${escapeHtml(e.about)}</div>`;
+      }
+
+      return `
+        <article class="card" aria-label="${escapeAttr(e.artist)}">
+          ${img}
+          <div class="card-b">
+            <div class="title">${escapeHtml(e.artist)}</div>
+            ${countryDisplay}
+            ${aboutDisplay}
+            ${detailsChips ? `<div class="chips">${detailsChips}</div>` : ''}
+            ${keywordChips ? `<div class="chips">${keywordChips}</div>` : ''}
+            <div class="card-actions">
+              ${linkPart}
+              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit artist">Edit</button>
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete artist">Delete</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function escapeHtml(str='') {
+      return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+    }
+    function escapeAttr(str='') { return escapeHtml(str); }
+
+    // --- Entry editing ---
+    function editEntry(entry) {
+      originalEntry = {...entry}; // Save original for undo
+      $('#editId').value = entry.id;
+      $('#artist').value = entry.artist;
+      $('#about').value = entry.about || '';
+      $('#website').value = entry.website;
+      $('#thumbnail').value = entry.thumbnail || '';
+      $('#country').value = entry.country || '';
+      
+      // Set details checkboxes
+      document.querySelectorAll('#entryForm input[name="details"]').forEach(checkbox => {
+        checkbox.checked = entry.details && entry.details.split(',').includes(checkbox.value);
+      });
+      
+      // Set keywords
+      const keywordsChips = $('#keywords-chips');
+      keywordsChips.innerHTML = '';
+      if (entry.keywords) {
+        entry.keywords.split(',').forEach(keyword => {
+          if (keyword.trim()) {
+            addKeywordChip(keyword.trim());
+          }
+        });
+      }
+      
+      $('#submitBtn').textContent = 'Update Artist';
+      $('#cancelEditBtn').style.display = 'block';
+      $('#undoBtn').style.display = 'block';
+      
+      // Scroll to form
+      document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      $('#entryForm').reset();
+      $('#editId').value = '';
+      $('#submitBtn').textContent = 'Add Artist';
+      $('#cancelEditBtn').style.display = 'none';
+      $('#undoBtn').style.display = 'none';
+      $('#keywords-chips').innerHTML = '';
+      $('#keywords').value = '';
+      originalEntry = null;
+    }
+
+    function undoChanges() {
+      if (!originalEntry) return;
+      
+      // Find the index of the entry we're editing
+      const index = state.findIndex(e => e.id === originalEntry.id);
+      if (index !== -1) {
+        // Restore original values
+        state[index] = {...originalEntry};
+        saveEntries(state);
+        render(state, $('#search').value);
+        toast('Changes undone');
+      }
+      
+      cancelEdit();
+    }
+    
+    // --- Autocomplete functions ---
+    function setupAutocomplete(inputElement, suggestionsElement, data) {
+      inputElement.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        if (!value) {
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+          return;
+        }
+        
+        const matches = data.filter(item => 
+          item.toLowerCase().includes(value)
+        ).slice(0, 5);
+        
+        if (matches.length) {
+          suggestionsElement.innerHTML = matches.map(item => 
+            `<div class="autocomplete-suggestion">${escapeHtml(item)}</div>`
+          ).join('');
+          suggestionsElement.classList.add('show');
+        } else {
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+        }
+      });
+      
+      // Handle suggestion selection
+      suggestionsElement.addEventListener('click', function(e) {
+        if (e.target.classList.contains('autocomplete-suggestion')) {
+          inputElement.value = e.target.textContent;
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+          inputElement.focus();
+        }
+      });
+      
+      // Hide suggestions when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (e.target !== inputElement) {
+          suggestionsElement.classList.remove('show');
+        }
+      });
+    }
+    
+    // --- Keyword management ---
+    function addKeywordChip(keyword) {
+      const chipsContainer = $('#keywords-chips');
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `
+        ${escapeHtml(keyword)}
+        <span class="chip-remove" data-keyword="${escapeAttr(keyword)}">×</span>
+      `;
+      chipsContainer.appendChild(chip);
+      
+      // Add remove functionality
+      chip.querySelector('.chip-remove').addEventListener('click', function() {
+        chip.remove();
+        updateKeywordsHiddenField();
+      });
+      
+      updateKeywordsHiddenField();
+    }
+    
+    function updateKeywordsHiddenField() {
+      const chips = Array.from($('#keywords-chips').querySelectorAll('.chip'));
+      const keywords = chips.map(chip => 
+        chip.textContent.replace('×', '').trim()
+      ).filter(k => k);
+      $('#keywords').value = keywords.join(',');
+    }
+
+    // --- Initialization ---
+    state = loadEntries();
+    render(state);
+    
+    // Initialize autocomplete for country
+    setupAutocomplete(
+      $('#country'),
+      $('#country-suggestions'),
+      countries
+    );
+    
+    // Initialize autocomplete for keywords
+    setupAutocomplete(
+      $('#keywords-input'),
+      $('#keywords-suggestions'),
+      commonKeywords
+    );
+    
+    // Handle keyword input
+    $('#keywords-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const value = this.value.trim();
+        if (value) {
+          addKeywordChip(value);
+          this.value = '';
+          $('#keywords-suggestions').classList.remove('show');
+        }
+      }
+    });
+    
+    // Allow selecting keyword suggestions
+    $('#keywords-suggestions').addEventListener('click', function(e) {
+      if (e.target.classList.contains('autocomplete-suggestion')) {
+        addKeywordChip(e.target.textContent);
+        $('#keywords-input').value = '';
+        this.classList.remove('show');
+      }
+    });
+
+    // Submit handler
+    $('#entryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Get checked details
+      const details = Array.from(document.querySelectorAll('#entryForm input[name="details"]:checked'))
+        .map(checkbox => checkbox.value)
+        .join(',');
+      
+      const entry = {
+        id: $('#editId').value || crypto.randomUUID(),
+        createdAt: $('#editId').value ? state.find(e => e.id === $('#editId').value)?.createdAt || new Date().toISOString() : new Date().toISOString(),
+        artist: $('#artist').value.trim(),
+        about: $('#about').value.trim(),
+        website: $('#website').value.trim(),
+        thumbnail: $('#thumbnail').value.trim(),
+        country: $('#country').value.trim(),
+        keywords: $('#keywords').value.trim(),
+        details: details
+      };
+
+      if (!entry.artist || !entry.website) {
+        toast('Please fill in required fields.');
+        return;
+      }
+
+      if ($('#editId').value) {
+        // Update existing entry
+        const index = state.findIndex(e => e.id === $('#editId').value);
+        if (index !== -1) {
+          state[index] = entry;
+          toast('Artist updated');
+        }
+      } else {
+        // Add new entry
+        state.unshift(entry);
+        toast('Artist added');
+      }
+
+      saveEntries(state);
+      render(state, $('#search').value);
+      cancelEdit();
+    });
+
+    // Export JSON
+    $('#exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,10);
+      a.href = url;
+      a.download = `artists-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast('JSON exported');
+    });
+
+    // Import JSON
+    $('#importInput').addEventListener('change', async (ev) => {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const incoming = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+        if (!incoming.length) throw new Error('No items found');
+
+        const byKey = new Map(state.map(it => [it.id, it]));
+        let added = 0;
+        for (const it of incoming) {
+          if (!byKey.has(it.id)) {
+            state.push({
+              id: it.id || crypto.randomUUID(),
+              createdAt: it.createdAt || new Date().toISOString(),
+              artist: it.artist || '',
+              about: it.about || '',
+              website: it.website || '',
+              thumbnail: it.thumbnail || '',
+              country: it.country || '',
+              keywords: it.keywords || '',
+              details: it.details || ''
+            });
+            byKey.set(it.id, it);
+            added++;
+          }
+        }
+        saveEntries(state);
+        render(state, $('#search').value);
+        toast(`Imported ${added} artist${added===1?'':'s'}`);
+      } catch (err) {
+        console.error(err);
+        toast('Import failed: invalid JSON');
+      } finally {
+        ev.target.value = '';
+      }
+    });
+
+    // Search
+    $('#search').addEventListener('input', (e) => {
+      render(state, e.target.value);
+    });
+
+    // Clear all
+    $('#clearBtn').addEventListener('click', () => {
+      if (!confirm('This will remove all artists stored locally on this browser. Continue?')) return;
+      state.splice(0, state.length);
+      saveEntries(state);
+      render(state);
+      toast('All local data cleared');
+    });
+
+    // Edit cancel button
+    $('#cancelEditBtn').addEventListener('click', cancelEdit);
+
+    // Undo button
+    $('#undoBtn').addEventListener('click', undoChanges);
+
+    // Delete confirmation
+    $('#cancelDeleteBtn').addEventListener('click', () => {
+      $('#deleteModal').style.display = 'none';
+      entryToDelete = null;
+    });
+
+    $('#confirmDeleteBtn').addEventListener('click', () => {
+      if (entryToDelete) {
+        const idx = state.findIndex(x => x.id === entryToDelete.id);
+        if (idx > -1) {
+          state.splice(idx, 1);
+          saveEntries(state);
+          render(state, $('#search').value);
+          toast('Portfolio removed');
+        }
+      }
+      $('#deleteModal').style.display = 'none';
+      entryToDelete = null;
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === $('#deleteModal')) {
+        $('#deleteModal').style.display = 'none';
+        entryToDelete = null;
+      }
+    });
+  </script>
+</body>
+</html>
