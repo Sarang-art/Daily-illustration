@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Articles Database</title>
+  <title>Creators Database</title>
   <style>
     :root {
       --bg: #ffe8ff;
@@ -125,8 +125,8 @@
     <div class="wrap">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <h1>Articles Database</h1>
-          <div class="sub">Track articles: name, author, link, thumbnail, topic, blog, language, plus details, country and keywords</div>
+          <h1>Creators Database</h1>
+          <div class="sub">Track creators: name, channel/blog, link, thumbnail — plus details, country, and keywords</div>
         </div>
         <button class="btn" onclick="window.location.href='Index.html'">Back to Index</button>
       </div>
@@ -138,7 +138,7 @@
           </span>
         </label>
         <button class="btn" id="clearBtn" title="Remove all local data">Clear All (Local)</button>
-        <input type="search" id="search" placeholder="Search by title, author, topic, blog..." aria-label="Search entries" />
+        <input type="search" id="search" placeholder="Search by name, channel, country, keywords..." aria-label="Search entries" />
       </div>
     </div>
   </header>
@@ -147,18 +147,18 @@
     <main>
       <!-- Form -->
       <section class="panel" aria-labelledby="form-title">
-        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Article</h2>
+        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Creator</h2>
         <form id="entryForm">
           <input type="hidden" id="editId" value="">
           <fieldset class="grid">
             <div>
-              <label for="articleName">Article name *</label>
-              <input id="articleName" name="articleName" type="text" required placeholder="e.g., How AI is Changing Design" />
+              <label for="creatorName">Name *</label>
+              <input id="creatorName" name="creatorName" type="text" required placeholder="e.g., Alex Johnson" />
             </div>
 
             <div>
-              <label for="author">Author</label>
-              <input id="author" name="author" type="text" placeholder="e.g., Jane Doe" />
+              <label for="channelName">Channel / Blog Name</label>
+              <input id="channelName" name="channelName" type="text" placeholder="e.g., The Design Channel" />
             </div>
 
             <div>
@@ -169,33 +169,6 @@
             <div>
               <label for="thumbnail">Thumbnail Image URL</label>
               <input id="thumbnail" name="thumbnail" type="url" placeholder="https://.../thumb.jpg" />
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-              <div>
-                <label for="mainTopic">Main topic</label>
-                <input id="mainTopic" name="mainTopic" list="topic-list" type="text" placeholder="e.g., Design, AI, Culture" />
-                <datalist id="topic-list">
-                  <option>Design</option>
-                  <option>Technology</option>
-                  <option>AI</option>
-                  <option>Culture</option>
-                  <option>Business</option>
-                  <option>Science</option>
-                  <option>Education</option>
-                  <option>Opinion</option>
-                  <option>Other</option>
-                </datalist>
-              </div>
-              <div>
-                <label for="blogName">Blog / Publication</label>
-                <input id="blogName" name="blogName" type="text" placeholder="e.g., Medium, The Verge" />
-              </div>
-            </div>
-
-            <div>
-              <label for="language">Language</label>
-              <input id="language" name="language" type="text" placeholder="e.g., English, Español" />
             </div>
 
             <!-- Details checklist (copied from original) -->
@@ -252,7 +225,7 @@
             <button type="button" class="btn undo" id="undoBtn" style="display: none;">Undo Changes</button>
             <button type="button" class="btn" id="cancelEditBtn" style="display: none;">Cancel</button>
             <button type="reset" class="btn">Reset</button>
-            <button type="submit" class="btn accent" id="submitBtn">Add Article</button>
+            <button type="submit" class="btn accent" id="submitBtn">Add Creator</button>
           </div>
           <p class="note">Entries are saved in your browser localStorage. Use <em>Export JSON</em> to save a file. Import merges non-duplicate items.</p>
         </form>
@@ -261,11 +234,11 @@
       <!-- List -->
       <section class="panel" aria-labelledby="list-title">
         <div class="list-head">
-          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Articles</h2>
+          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Creators</h2>
           <div class="count" id="count">0 items</div>
         </div>
         <div id="cards" class="cards" aria-live="polite"></div>
-        <div id="empty" class="empty" hidden>No articles yet. Add your first one on the left!</div>
+        <div id="empty" class="empty" hidden>No creators yet. Add your first one on the left!</div>
       </section>
     </main>
   </div>
@@ -273,7 +246,7 @@
   <!-- Delete modal -->
   <div class="modal" id="deleteModal" style="display:none; position: fixed; top:0; left:0; right:0; bottom:0; align-items:center; justify-content:center; z-index:200; background: rgba(0,0,0,0.5);">
     <div style="background:white; padding:18px; border-radius:12px; max-width:420px;">
-      <p>Are you sure you want to delete this article?</p>
+      <p>Are you sure you want to delete this creator?</p>
       <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
         <button class="btn" id="cancelDeleteBtn">Cancel</button>
         <button class="btn danger" id="confirmDeleteBtn">Delete</button>
@@ -287,7 +260,7 @@
     // -------------------------
     // Storage & utilities
     // -------------------------
-    const STORAGE_KEY = 'articleEntries.v1';
+    const STORAGE_KEY = 'creatorEntries.v1';
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     let state = [];
@@ -317,9 +290,9 @@
       "Uruguay","Uzbekistan","Vanuatu","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
     ];
 
-    // Base keywords (seed)
+    // Base keywords (seed for creators)
     const baseKeywords = [
-      "Design","Technology","AI","Culture","Business","Science","Education","Opinion","Review","Interview","Analysis","How-to","Trends","Case Study"
+      "YouTube","Blog","Podcast","Instagram","TikTok","Vlog","Tutorial","Interview","Review","Education","Design","Tech","Art","Photography"
     ];
 
     function loadEntries() {
@@ -502,10 +475,8 @@
 
       const q = query.trim().toLowerCase();
       const filtered = q ? entries.filter(e => {
-        return (e.articleName && e.articleName.toLowerCase().includes(q)) ||
-               (e.author && e.author.toLowerCase().includes(q)) ||
-               (e.mainTopic && e.mainTopic.toLowerCase().includes(q)) ||
-               (e.blogName && e.blogName.toLowerCase().includes(q)) ||
+        return (e.creatorName && e.creatorName.toLowerCase().includes(q)) ||
+               (e.channelName && e.channelName.toLowerCase().includes(q)) ||
                (e.country && e.country.toLowerCase().includes(q)) ||
                (e.details && e.details.toLowerCase().includes(q)) ||
                (e.keywords && e.keywords.toLowerCase().includes(q));
@@ -546,30 +517,27 @@
     }
 
     function cardTemplate(e) {
-      const img = e.thumbnail ? `<img class="thumb" alt="${escapeAttr(e.articleName)}" src="${escapeAttr(e.thumbnail)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+      const img = e.thumbnail ? `<img class="thumb" alt="${escapeAttr(e.creatorName)}" src="${escapeAttr(e.thumbnail)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
       const linkPart = e.originalLink ? `<a href="${escapeAttr(e.originalLink)}" target="_blank" rel="noopener" class="btn primary">Open</a>` : '';
       const metaParts = [];
-      if (e.author) metaParts.push(escapeHtml(e.author));
-      if (e.mainTopic) metaParts.push(escapeHtml(e.mainTopic));
-      if (e.blogName) metaParts.push(escapeHtml(e.blogName));
-      if (e.language) metaParts.push(escapeHtml(e.language));
+      if (e.channelName) metaParts.push(escapeHtml(e.channelName));
       const meta = metaParts.length ? `<div class="meta">${metaParts.join(' · ')}</div>` : '';
       const country = e.country ? `<div class="meta">Country: ${escapeHtml(e.country)}</div>` : '';
       const detailsChips = e.details ? e.details.split(',').map(d => `<span class="chip">${escapeHtml(d.trim())}</span>`).join('') : '';
       const keywordChips = e.keywords ? e.keywords.split(',').map(k => `<span class="chip">${escapeHtml(k.trim())}</span>`).join('') : '';
       return `
-        <article class="card" aria-label="${escapeAttr(e.articleName)}">
+        <article class="card" aria-label="${escapeAttr(e.creatorName)}">
           ${img}
           <div class="card-b">
-            <div class="title">${escapeHtml(e.articleName)}</div>
+            <div class="title">${escapeHtml(e.creatorName)}</div>
             ${meta}
             ${country}
             ${detailsChips ? `<div class="chips">${detailsChips}</div>` : ''}
             ${keywordChips ? `<div class="chips">${keywordChips}</div>` : ''}
             <div class="card-actions">
               ${linkPart}
-              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit article">Edit</button>
-              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete article">Delete</button>
+              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit creator">Edit</button>
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete creator">Delete</button>
             </div>
           </div>
         </article>`;
@@ -581,13 +549,10 @@
     function editEntry(entry) {
       originalEntry = {...entry};
       $('#editId').value = entry.id;
-      $('#articleName').value = entry.articleName || '';
-      $('#author').value = entry.author || '';
+      $('#creatorName').value = entry.creatorName || '';
+      $('#channelName').value = entry.channelName || '';
       $('#originalLink').value = entry.originalLink || '';
       $('#thumbnail').value = entry.thumbnail || '';
-      $('#mainTopic').value = entry.mainTopic || '';
-      $('#blogName').value = entry.blogName || '';
-      $('#language').value = entry.language || '';
       $('#country').value = entry.country || '';
 
       // set details checkboxes
@@ -601,7 +566,7 @@
         entry.keywords.split(',').map(k => k.trim()).filter(Boolean).forEach(k => addKeywordChip(k));
       }
 
-      $('#submitBtn').textContent = 'Update Article';
+      $('#submitBtn').textContent = 'Update Creator';
       $('#cancelEditBtn').style.display = 'block';
       $('#undoBtn').style.display = 'block';
       document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
@@ -610,7 +575,7 @@
     function cancelEdit() {
       $('#entryForm').reset();
       $('#editId').value = '';
-      $('#submitBtn').textContent = 'Add Article';
+      $('#submitBtn').textContent = 'Add Creator';
       $('#cancelEditBtn').style.display = 'none';
       $('#undoBtn').style.display = 'none';
       $('#keywords-chips').innerHTML = '';
@@ -655,20 +620,17 @@
       const entry = {
         id: $('#editId').value || crypto.randomUUID(),
         createdAt: $('#editId').value ? state.find(e => e.id === $('#editId').value)?.createdAt || new Date().toISOString() : new Date().toISOString(),
-        articleName: $('#articleName').value.trim(),
-        author: $('#author').value.trim(),
+        creatorName: $('#creatorName').value.trim(),
+        channelName: $('#channelName').value.trim(),
         originalLink: $('#originalLink').value.trim(),
         thumbnail: $('#thumbnail').value.trim(),
-        mainTopic: $('#mainTopic').value.trim(),
-        blogName: $('#blogName').value.trim(),
-        language: $('#language').value.trim(),
         details: details,
         country: $('#country').value.trim(),
         keywords: $('#keywords').value.trim()
       };
 
-      if (!entry.articleName) {
-        toast('Please add the article name.');
+      if (!entry.creatorName) {
+        toast('Please add the creator name.');
         return;
       }
 
@@ -676,11 +638,11 @@
         const idx = state.findIndex(e => e.id === $('#editId').value);
         if (idx !== -1) {
           state[idx] = entry;
-          toast('Article updated');
+          toast('Creator updated');
         }
       } else {
         state.unshift(entry);
-        toast('Article added');
+        toast('Creator added');
       }
 
       saveEntries(state);
@@ -697,7 +659,7 @@
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,10);
       a.href = url;
-      a.download = `articles-${stamp}.json`;
+      a.download = `creators-${stamp}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -722,13 +684,10 @@
             state.push({
               id,
               createdAt: it.createdAt || new Date().toISOString(),
-              articleName: it.articleName || it.title || it.name || '',
-              author: it.author || it.creator || '',
+              creatorName: it.creatorName || it.name || it.title || '',
+              channelName: it.channelName || it.channel || it.blog || '',
               originalLink: it.originalLink || it.link || it.url || '',
               thumbnail: it.thumbnail || it.imageUrl || it.thumb || '',
-              mainTopic: it.mainTopic || it.topic || it.category || '',
-              blogName: it.blogName || it.publication || it.source || '',
-              language: it.language || it.lang || '',
               details: it.details || '',
               country: it.country || '',
               keywords: it.keywords || ''
@@ -739,7 +698,7 @@
         }
         saveEntries(state);
         render(state, $('#search').value);
-        toast(`Imported ${added} article${added===1?'':'s'}`);
+        toast(`Imported ${added} creator${added===1?'':'s'}`);
       } catch (err) {
         console.error(err);
         toast('Import failed: invalid JSON');
@@ -755,7 +714,7 @@
 
     // Clear all
     $('#clearBtn').addEventListener('click', () => {
-      if (!confirm('This will remove all articles stored locally on this browser. Continue?')) return;
+      if (!confirm('This will remove all creators stored locally on this browser. Continue?')) return;
       state.splice(0, state.length);
       saveEntries(state);
       render(state);
@@ -778,7 +737,7 @@
           state.splice(idx, 1);
           saveEntries(state);
           render(state, $('#search').value);
-          toast('Article removed');
+          toast('Creator removed');
         }
       }
       $('#deleteModal').style.display = 'none';
