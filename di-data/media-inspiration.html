@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prompt Database</title>
+  <title>Media Database</title>
   <style>
     :root {
       --bg: #ffe8ff;
@@ -65,7 +65,6 @@
       width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
       background: white; color: var(--text); outline: none; transition: border-color .2s ease, box-shadow .2s ease;
     }
-    textarea { min-height: 140px; resize: vertical; }
     input:focus, textarea:focus, select:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(247,40,220,0.15); }
 
     .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
@@ -74,11 +73,12 @@
     .list-head { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
     .count { color: var(--muted); font-size: 0.9rem; }
 
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
     .card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: white; display: flex; flex-direction: column; }
+    .thumb { aspect-ratio: 4/3; width: 100%; object-fit: cover; background: #f8f0f8; }
     .card-b { padding: 12px; display: grid; gap: 8px; }
     .title { font-weight: 650; font-size: 1rem; line-height: 1.2; }
-    .meta { color: var(--muted); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta { color: var(--muted); font-size: 0.85rem; }
     .card-actions { display: flex; gap: 6px; margin-top: 2px; }
 
     .empty { color: var(--muted); text-align: center; padding: 28px 0; border: 1px dashed var(--border); border-radius: 12px; }
@@ -112,9 +112,12 @@
 
     .small { font-size: 0.85rem; color: var(--muted); }
 
-    .radio-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:6px; }
-    .radio-item { display:flex; gap:6px; align-items:center; padding:6px 8px; border-radius:10px; border:1px solid var(--border); background:#fff; cursor:pointer; }
-    .radio-item input { accent-color: var(--focus); }
+    /* Details checklist styles (from original) */
+    .details-title { font-size: 0.85rem; color: var(--muted); margin: 16px 0 8px; }
+    .checklist { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .checklist-item { display: flex; align-items: center; gap: 6px; }
+    .checklist-item input { width: auto; }
+    .checklist-item label { margin: 0; font-size: 0.9rem; color: var(--text); }
   </style>
 </head>
 <body>
@@ -122,8 +125,8 @@
     <div class="wrap">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <h1>Prompt Database</h1>
-          <div class="sub">Store prompts (text) with a type, plus optional keywords.</div>
+          <h1>Media Database</h1>
+          <div class="sub">Track media: name, creator, link, thumbnail, type, origin/language, year, details and keywords</div>
         </div>
         <button class="btn" onclick="window.location.href='Index.html'">Back to Index</button>
       </div>
@@ -135,7 +138,7 @@
           </span>
         </label>
         <button class="btn" id="clearBtn" title="Remove all local data">Clear All (Local)</button>
-        <input type="search" id="search" placeholder="Search by title, prompt text, type, keywords..." aria-label="Search entries" />
+        <input type="search" id="search" placeholder="Search by name, creator, type, origin..." aria-label="Search entries" />
       </div>
     </div>
   </header>
@@ -144,33 +147,94 @@
     <main>
       <!-- Form -->
       <section class="panel" aria-labelledby="form-title">
-        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Prompt</h2>
+        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Media</h2>
         <form id="entryForm">
           <input type="hidden" id="editId" value="">
           <fieldset class="grid">
             <div>
-              <label for="title">Prompt Title (optional)</label>
-              <input id="title" name="title" type="text" placeholder="Short identifier (e.g., 'Noir Detective Scene')" />
+              <label for="name">Name *</label>
+              <input id="name" name="name" type="text" required placeholder="e.g., Neon Genesis Evangelion" />
             </div>
 
             <div>
-              <label for="promptText">Prompt (text) *</label>
-              <textarea id="promptText" name="promptText" required placeholder="Enter your full prompt here..."></textarea>
+              <label for="creator">Creator / Author / Director</label>
+              <input id="creator" name="creator" type="text" placeholder="e.g., Hideaki Anno, Studio, Author" />
             </div>
 
             <div>
-              <label>Type</label>
-              <div class="radio-row" role="radiogroup" aria-label="Prompt type">
-                <label class="radio-item"><input type="radio" name="promptType" value="project" required> Project</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="study"> Study</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="character"> Character</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="scene"> Scene</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="prop/object"> Prop/Object</label>
+              <label for="link">Link</label>
+              <input id="link" name="link" type="url" placeholder="https://..." />
+            </div>
+
+            <div>
+              <label for="thumbnail">Thumbnail Image URL</label>
+              <input id="thumbnail" name="thumbnail" type="url" placeholder="https://.../thumb.jpg" />
+            </div>
+
+            <!-- Type input styled like other inputs and using datalist suggestions -->
+            <div class="autocomplete-container">
+              <label for="type">Type</label>
+              <input id="type" name="type" list="type-list" type="text" placeholder="Start typing or pick a suggestion" />
+              <datalist id="type-list">
+                <option>TV Series</option>
+                <option>Movie</option>
+                <option>Book</option>
+                <option>Manga</option>
+                <option>Animation</option>
+                <option>Webcomic</option>
+                <option>Podcast</option>
+                <option>Short Film</option>
+                <option>Documentary</option>
+                <option>Other</option>
+              </datalist>
+              <div class="small">Suggestions are provided but you can type any custom type.</div>
+            </div>
+
+            <!-- Year -->
+            <div>
+              <label for="year">Year</label>
+              <input id="year" name="year" type="number" min="1800" max="2100" placeholder="e.g., 1995" />
+            </div>
+
+            <!-- Details checklist (kept as requested) -->
+            <div>
+              <div class="details-title">Details</div>
+              <div class="checklist">
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-women" name="details" value="Women">
+                  <label for="detail-women">Women</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-black" name="details" value="Black">
+                  <label for="detail-black">Black</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-indigenous" name="details" value="Indigenous">
+                  <label for="detail-indigenous">Indigenous</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-asian" name="details" value="Asian">
+                  <label for="detail-asian">Asian</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-disabled" name="details" value="Disabled">
+                  <label for="detail-disabled">Disabled</label>
+                </div>
+                <div class="checklist-item">
+                  <input type="checkbox" id="detail-lgbtqiap" name="details" value="LGBTQIAP+">
+                  <label for="detail-lgbtqiap">LGBTQIAP+</label>
+                </div>
               </div>
-              <div class="small">Choose one type for this prompt.</div>
             </div>
 
-            <!-- Keywords (dynamic suggestions) -->
+            <!-- Origin (replaces country) -->
+            <div class="autocomplete-container">
+              <label for="origin">Origin / Language</label>
+              <input id="origin" name="origin" type="text" placeholder="Start typing to see suggestions (country or language)" />
+              <div id="origin-suggestions" class="autocomplete-suggestions"></div>
+            </div>
+
+            <!-- Keywords (dynamic suggestions from previous entries + base list) -->
             <div class="autocomplete-container">
               <label for="keywords-input">Keywords</label>
               <input id="keywords-input" type="text" placeholder="Type and press Enter to add keywords" autocomplete="off" />
@@ -186,7 +250,7 @@
             <button type="button" class="btn undo" id="undoBtn" style="display: none;">Undo Changes</button>
             <button type="button" class="btn" id="cancelEditBtn" style="display: none;">Cancel</button>
             <button type="reset" class="btn">Reset</button>
-            <button type="submit" class="btn accent" id="submitBtn">Add Prompt</button>
+            <button type="submit" class="btn accent" id="submitBtn">Add Media</button>
           </div>
           <p class="note">Entries are saved in your browser localStorage. Use <em>Export JSON</em> to save a file. Import merges non-duplicate items.</p>
         </form>
@@ -195,11 +259,11 @@
       <!-- List -->
       <section class="panel" aria-labelledby="list-title">
         <div class="list-head">
-          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Prompts</h2>
+          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Media</h2>
           <div class="count" id="count">0 items</div>
         </div>
         <div id="cards" class="cards" aria-live="polite"></div>
-        <div id="empty" class="empty" hidden>No prompts yet. Add your first one on the left!</div>
+        <div id="empty" class="empty" hidden>No media yet. Add your first one on the left!</div>
       </section>
     </main>
   </div>
@@ -207,7 +271,7 @@
   <!-- Delete modal -->
   <div class="modal" id="deleteModal" style="display:none; position: fixed; top:0; left:0; right:0; bottom:0; align-items:center; justify-content:center; z-index:200; background: rgba(0,0,0,0.5);">
     <div style="background:white; padding:18px; border-radius:12px; max-width:420px;">
-      <p>Are you sure you want to delete this prompt?</p>
+      <p>Are you sure you want to delete this item?</p>
       <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
         <button class="btn" id="cancelDeleteBtn">Cancel</button>
         <button class="btn danger" id="confirmDeleteBtn">Delete</button>
@@ -221,16 +285,42 @@
     // -------------------------
     // Storage & utilities
     // -------------------------
-    const STORAGE_KEY = 'promptEntries.v1';
+    const STORAGE_KEY = 'mediaEntries.v1';
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     let state = [];
     let originalEntry = null;
     let entryToDelete = null;
 
+    // Country / language list (same as original country list; can also type languages)
+    const countries = [
+      "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia",
+      "Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan",
+      "Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Côte d'Ivoire",
+      "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros",
+      "Congo","Costa Rica","Croatia","Cuba","Cyprus","Czechia","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador",
+      "Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon",
+      "Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Holy See",
+      "Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan",
+      "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya",
+      "Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands",
+      "Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique",
+      "Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea",
+      "North Macedonia","Norway","Oman","Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines",
+      "Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines",
+      "Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore",
+      "Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan",
+      "Suriname","Sweden","Switzerland","Syria","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago",
+      "Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States",
+      "Uruguay","Uzbekistan","Vanuatu","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe",
+      // add common languages as suggestions too
+      "English","Japanese","Korean","Mandarin","Spanish","French","German","Portuguese","Italian","Hindi","Arabic","Russian"
+    ];
+
+    // Base keywords (seed)
     const baseKeywords = [
-      "atmosphere","lighting","mood","color palette","composition","reference","style","vibe","details","setting",
-      "character","pose","gesture","close-up","wide-shot","cinematic","concept","iteration"
+      "Drama","Comedy","Action","Romance","Horror","Sci-Fi","Fantasy","Mystery","Thriller",
+      "Slice of Life","Romance","Adventure","Psychological","Supernatural","Historical","Documentary"
     ];
 
     function loadEntries() {
@@ -257,7 +347,9 @@
     }
     function escapeAttr(str='') { return escapeHtml(str); }
 
-    // Keywords utilities
+    // -------------------------
+    // Keyword utilities (dynamic)
+    // -------------------------
     function keywordsFromState() {
       const map = new Map();
       for (const e of state) {
@@ -293,7 +385,45 @@
       return matches.slice(0, limit);
     }
 
-    // Keyword chips
+    // -------------------------
+    // Autocomplete setup (origin)
+    // -------------------------
+    function setupAutocomplete(inputElement, suggestionsElement, data) {
+      inputElement.addEventListener('input', function() {
+        const value = this.value.trim();
+        if (!value) {
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+          return;
+        }
+        const val = value.toLowerCase();
+        const matches = data.filter(item => item.toLowerCase().includes(val)).slice(0, 8);
+        if (matches.length) {
+          suggestionsElement.innerHTML = matches.map(item => `<div class="autocomplete-suggestion">${escapeHtml(item)}</div>`).join('');
+          suggestionsElement.classList.add('show');
+        } else {
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+        }
+      });
+
+      suggestionsElement.addEventListener('click', function(e) {
+        if (e.target.classList.contains('autocomplete-suggestion')) {
+          inputElement.value = e.target.textContent;
+          suggestionsElement.innerHTML = '';
+          suggestionsElement.classList.remove('show');
+          inputElement.focus();
+        }
+      });
+
+      document.addEventListener('click', function(e) {
+        if (e.target !== inputElement) suggestionsElement.classList.remove('show');
+      });
+    }
+
+    // -------------------------
+    // Keyword chips management
+    // -------------------------
     function addKeywordChip(keyword) {
       if (!keyword) return;
       const chipsContainer = $('#keywords-chips');
@@ -363,7 +493,9 @@
       });
     }
 
+    // -------------------------
     // Rendering
+    // -------------------------
     function render(entries, query = '') {
       const cards = $('#cards');
       const empty = $('#empty');
@@ -371,10 +503,13 @@
 
       const q = query.trim().toLowerCase();
       const filtered = q ? entries.filter(e => {
-        return (e.title && e.title.toLowerCase().includes(q)) ||
-               (e.promptText && e.promptText.toLowerCase().includes(q)) ||
+        return (e.name && e.name.toLowerCase().includes(q)) ||
+               (e.creator && e.creator.toLowerCase().includes(q)) ||
                (e.type && e.type.toLowerCase().includes(q)) ||
-               (e.keywords && e.keywords.toLowerCase().includes(q));
+               (e.origin && e.origin.toLowerCase().includes(q)) ||
+               (e.details && e.details.toLowerCase().includes(q)) ||
+               (e.keywords && e.keywords.toLowerCase().includes(q)) ||
+               (e.year && String(e.year).includes(q));
       }) : entries;
 
       count.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
@@ -411,40 +546,54 @@
       });
     }
 
-    function truncateText(s, n=180) {
-      if (!s) return '';
-      return s.length > n ? s.slice(0,n).trim() + '…' : s;
-    }
-
     function cardTemplate(e) {
-      const title = e.title ? `<div class="title">${escapeHtml(e.title)}</div>` : '';
-      const type = e.type ? `<div class="meta">Type: ${escapeHtml(e.type)}</div>` : '';
+      const img = e.thumbnail ? `<img class="thumb" alt="${escapeAttr(e.name || 'thumbnail')}" src="${escapeAttr(e.thumbnail)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+      const linkPart = e.link ? `<a href="${escapeAttr(e.link)}" target="_blank" rel="noopener" class="btn primary">Open</a>` : '';
+      const metaParts = [];
+      if (e.creator) metaParts.push(escapeHtml(e.creator));
+      if (e.type) metaParts.push(escapeHtml(e.type));
+      const meta = metaParts.length ? `<div class="meta">${metaParts.join(' · ')}</div>` : '';
+      const origin = e.origin ? `<div class="meta">Origin: ${escapeHtml(e.origin)}</div>` : '';
+      const year = e.year ? `<div class="meta">Year: ${escapeHtml(String(e.year))}</div>` : '';
+      const detailsChips = e.details ? e.details.split(',').map(d => `<span class="chip">${escapeHtml(d.trim())}</span>`).join('') : '';
       const keywordChips = e.keywords ? e.keywords.split(',').map(k => `<span class="chip">${escapeHtml(k.trim())}</span>`).join('') : '';
-      const promptPreview = `<div class="meta" title="${escapeAttr(e.promptText || '')}">${escapeHtml(truncateText(e.promptText || ''))}</div>`;
       return `
-        <article class="card" aria-label="${escapeAttr(e.title || (e.promptText||'Prompt'))}">
+        <article class="card" aria-label="${escapeAttr(e.name)}">
+          ${img}
           <div class="card-b">
-            ${title}
-            ${type}
-            ${promptPreview}
+            <div class="title">${escapeHtml(e.name)}</div>
+            ${meta}
+            ${origin}
+            ${year}
+            ${detailsChips ? `<div class="chips">${detailsChips}</div>` : ''}
             ${keywordChips ? `<div class="chips">${keywordChips}</div>` : ''}
             <div class="card-actions">
-              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit prompt">Edit</button>
-              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete prompt">Delete</button>
+              ${linkPart}
+              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit item">Edit</button>
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete item">Delete</button>
             </div>
           </div>
         </article>`;
     }
 
+    // -------------------------
     // Edit / cancel / undo
+    // -------------------------
     function editEntry(entry) {
       originalEntry = {...entry};
       $('#editId').value = entry.id;
-      $('#title').value = entry.title || '';
-      $('#promptText').value = entry.promptText || '';
-      // set radio
-      const radios = $$('input[name="promptType"]');
-      radios.forEach(r => r.checked = (entry.type === r.value));
+      $('#name').value = entry.name || '';
+      $('#creator').value = entry.creator || '';
+      $('#link').value = entry.link || '';
+      $('#thumbnail').value = entry.thumbnail || '';
+      $('#type').value = entry.type || '';
+      $('#origin').value = entry.origin || '';
+      $('#year').value = entry.year || '';
+
+      // set details checkboxes
+      $$('#entryForm input[name="details"]').forEach(checkbox => {
+        checkbox.checked = entry.details && entry.details.split(',').map(s => s.trim()).includes(checkbox.value);
+      });
 
       // keywords chips
       $('#keywords-chips').innerHTML = '';
@@ -452,7 +601,7 @@
         entry.keywords.split(',').map(k => k.trim()).filter(Boolean).forEach(k => addKeywordChip(k));
       }
 
-      $('#submitBtn').textContent = 'Update Prompt';
+      $('#submitBtn').textContent = 'Update Media';
       $('#cancelEditBtn').style.display = 'block';
       $('#undoBtn').style.display = 'block';
       document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
@@ -461,11 +610,12 @@
     function cancelEdit() {
       $('#entryForm').reset();
       $('#editId').value = '';
-      $('#submitBtn').textContent = 'Add Prompt';
+      $('#submitBtn').textContent = 'Add Media';
       $('#cancelEditBtn').style.display = 'none';
       $('#undoBtn').style.display = 'none';
       $('#keywords-chips').innerHTML = '';
       $('#keywords').value = '';
+      $$('#entryForm input[name="details"]').forEach(cb => cb.checked = false);
       originalEntry = null;
     }
 
@@ -481,34 +631,43 @@
       cancelEdit();
     }
 
+    // -------------------------
     // Initialization & handlers
+    // -------------------------
     state = loadEntries();
     render(state);
 
+    // Origin autocomplete
+    setupAutocomplete($('#origin'), $('#origin-suggestions'), countries);
+
+    // Keywords input
     initKeywordsInput();
 
+    // Submit handler
     $('#entryForm').addEventListener('submit', (ev) => {
       ev.preventDefault();
 
-      // Get selected type (radio)
-      const typeEl = document.querySelector('input[name="promptType"]:checked');
-      const typeVal = typeEl ? typeEl.value : '';
+      // Get checked details from checklist
+      const details = Array.from(document.querySelectorAll('#entryForm input[name="details"]:checked'))
+        .map(checkbox => checkbox.value)
+        .join(',');
 
       const entry = {
         id: $('#editId').value || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)),
         createdAt: $('#editId').value ? (state.find(e => e.id === $('#editId').value)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
-        title: $('#title').value.trim(),
-        promptText: $('#promptText').value.trim(),
-        type: typeVal,
+        name: $('#name').value.trim(),
+        creator: $('#creator').value.trim(),
+        link: $('#link').value.trim(),
+        thumbnail: $('#thumbnail').value.trim(),
+        type: $('#type').value.trim(),
+        details: details,
+        origin: $('#origin').value.trim(),
+        year: $('#year').value ? Number($('#year').value) : '',
         keywords: $('#keywords').value.trim()
       };
 
-      if (!entry.promptText) {
-        toast('Please add the prompt text.');
-        return;
-      }
-      if (!entry.type) {
-        toast('Please select a type.');
+      if (!entry.name) {
+        toast('Please add the name.');
         return;
       }
 
@@ -516,11 +675,11 @@
         const idx = state.findIndex(e => e.id === $('#editId').value);
         if (idx !== -1) {
           state[idx] = entry;
-          toast('Prompt updated');
+          toast('Media updated');
         }
       } else {
         state.unshift(entry);
-        toast('Prompt added');
+        toast('Media added');
       }
 
       saveEntries(state);
@@ -537,7 +696,7 @@
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,10);
       a.href = url;
-      a.download = `prompts-${stamp}.json`;
+      a.download = `media-${stamp}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -562,9 +721,14 @@
             state.push({
               id,
               createdAt: it.createdAt || new Date().toISOString(),
-              title: it.title || it.name || '',
-              promptText: it.promptText || it.prompt || it.text || '',
+              name: it.name || it.projectName || it.title || '',
+              creator: it.creator || it.author || it.director || '',
+              link: it.link || it.originalLink || it.website || it.link || '',
+              thumbnail: it.thumbnail || it.imageUrl || it.thumb || '',
               type: it.type || it.category || '',
+              details: it.details || '',
+              origin: it.origin || it.country || '',
+              year: it.year || it.releaseYear || '',
               keywords: it.keywords || ''
             });
             byKey.set(id, true);
@@ -612,7 +776,7 @@
           state.splice(idx, 1);
           saveEntries(state);
           render(state, $('#search').value);
-          toast('Prompt removed');
+          toast('Item removed');
         }
       }
       $('#deleteModal').style.display = 'none';

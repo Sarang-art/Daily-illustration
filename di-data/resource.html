@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prompt Database</title>
+  <title>Resource Database</title>
   <style>
     :root {
       --bg: #ffe8ff;
@@ -65,7 +65,7 @@
       width: 100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
       background: white; color: var(--text); outline: none; transition: border-color .2s ease, box-shadow .2s ease;
     }
-    textarea { min-height: 140px; resize: vertical; }
+    textarea { min-height: 84px; resize: vertical; }
     input:focus, textarea:focus, select:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(247,40,220,0.15); }
 
     .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
@@ -74,12 +74,14 @@
     .list-head { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
     .count { color: var(--muted); font-size: 0.9rem; }
 
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
     .card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: white; display: flex; flex-direction: column; }
+    .thumb { aspect-ratio: 4/3; width: 100%; object-fit: cover; background: #f8f0f8; }
     .card-b { padding: 12px; display: grid; gap: 8px; }
     .title { font-weight: 650; font-size: 1rem; line-height: 1.2; }
-    .meta { color: var(--muted); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta { color: var(--muted); font-size: 0.85rem; }
     .card-actions { display: flex; gap: 6px; margin-top: 2px; }
+    .desc { color: var(--text); font-size: 0.92rem; margin-top: 4px; max-height: 4.2rem; overflow: hidden; }
 
     .empty { color: var(--muted); text-align: center; padding: 28px 0; border: 1px dashed var(--border); border-radius: 12px; }
 
@@ -112,9 +114,13 @@
 
     .small { font-size: 0.85rem; color: var(--muted); }
 
-    .radio-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:6px; }
-    .radio-item { display:flex; gap:6px; align-items:center; padding:6px 8px; border-radius:10px; border:1px solid var(--border); background:#fff; cursor:pointer; }
-    .radio-item input { accent-color: var(--focus); }
+    /* radio list styles */
+    .radio-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; margin-top:6px; }
+    .radio-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+    .radio-item input[type="radio"] { flex:0 0 18px; width:18px; height:18px; }
+    .radio-item.selected { outline:2px solid rgba(247,40,220,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
+    .type-other { display:flex; gap:8px; margin-top:8px; align-items:center; }
+
   </style>
 </head>
 <body>
@@ -122,11 +128,12 @@
     <div class="wrap">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <h1>Prompt Database</h1>
-          <div class="sub">Store prompts (text) with a type, plus optional keywords.</div>
+          <h1>Resource Database</h1>
+          <div class="sub">Save books, tools, articles, channels and other useful resources</div>
         </div>
         <button class="btn" onclick="window.location.href='Index.html'">Back to Index</button>
       </div>
+
       <div class="toolbar">
         <button class="btn primary" id="exportBtn" title="Download all entries as JSON">Export JSON</button>
         <label class="btn" id="importLabel">
@@ -135,7 +142,7 @@
           </span>
         </label>
         <button class="btn" id="clearBtn" title="Remove all local data">Clear All (Local)</button>
-        <input type="search" id="search" placeholder="Search by title, prompt text, type, keywords..." aria-label="Search entries" />
+        <input type="search" id="search" placeholder="Search by name, creator, type, topic, keywords, description..." aria-label="Search entries" style="flex:1; min-width:220px; padding:10px 12px; border-radius:12px; border:1px solid var(--border);" />
       </div>
     </div>
   </header>
@@ -144,40 +151,94 @@
     <main>
       <!-- Form -->
       <section class="panel" aria-labelledby="form-title">
-        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Prompt</h2>
+        <h2 id="form-title" style="margin: 4px 0 10px; font-size: 1.05rem; color: var(--muted);">Add / Edit Resource</h2>
         <form id="entryForm">
           <input type="hidden" id="editId" value="">
           <fieldset class="grid">
             <div>
-              <label for="title">Prompt Title (optional)</label>
-              <input id="title" name="title" type="text" placeholder="Short identifier (e.g., 'Noir Detective Scene')" />
+              <label for="name">Name *</label>
+              <input id="name" name="name" type="text" required placeholder="e.g., Design Patterns in JS" />
             </div>
 
             <div>
-              <label for="promptText">Prompt (text) *</label>
-              <textarea id="promptText" name="promptText" required placeholder="Enter your full prompt here..."></textarea>
+              <label for="creator">Creator</label>
+              <input id="creator" name="creator" type="text" placeholder="Author, channel or organization" />
             </div>
 
+            <div>
+              <label for="description">Description</label>
+              <textarea id="description" name="description" placeholder="Short description or notes about this resource"></textarea>
+            </div>
+
+            <!-- TYPE: radio list -->
             <div>
               <label>Type</label>
-              <div class="radio-row" role="radiogroup" aria-label="Prompt type">
-                <label class="radio-item"><input type="radio" name="promptType" value="project" required> Project</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="study"> Study</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="character"> Character</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="scene"> Scene</label>
-                <label class="radio-item"><input type="radio" name="promptType" value="prop/object"> Prop/Object</label>
+              <div class="radio-grid" id="typeRadios" role="radiogroup" aria-labelledby="typeLabel">
+                <label class="radio-item"><input type="radio" name="type" value="book"> <span>book</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="reference"> <span>reference</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="article"> <span>article</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="guide"> <span>guide</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="random resource"> <span>random resource</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="youtube channel"> <span>youtube channel</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="tool"> <span>tool</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="blog"> <span>blog</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="research & inspiration"> <span>research & inspiration</span></label>
+                <label class="radio-item"><input type="radio" name="type" value="course"> <span>course</span></label>
+                <label class="radio-item" id="radio-other-label">
+                  <input type="radio" name="type" value="other"> <span>Other</span>
+                </label>
               </div>
-              <div class="small">Choose one type for this prompt.</div>
+
+              <div class="type-other" id="typeOtherWrap" style="display:none;">
+                <input id="typeOther" type="text" placeholder="Enter custom type (e.g., newsletter)" />
+                <div class="small">Choose 'Other' to specify a custom type.</div>
+              </div>
             </div>
 
-            <!-- Keywords (dynamic suggestions) -->
+            <div>
+              <label for="originalLink">Link to original</label>
+              <input id="originalLink" name="originalLink" type="url" placeholder="https://..." />
+            </div>
+
+            <div>
+              <label for="thumbnail">Thumbnail Image URL</label>
+              <input id="thumbnail" name="thumbnail" type="url" placeholder="https://.../thumb.jpg" />
+            </div>
+
+            <div class="autocomplete-container">
+              <label for="mainTopic">Main topic</label>
+              <input id="mainTopic" list="topic-list" name="mainTopic" type="text" placeholder="Start typing or pick a suggestion" />
+              <datalist id="topic-list">
+                <option>Illustration</option>
+                <option>Color</option>
+                <option>Anatomy</option>
+                <option>Composition</option>
+                <option>Career</option>
+                <option>Business</option>
+                <option>Character Design</option>
+                <option>Concept Art</option>
+                <option>Study</option>
+                <option>Personal Organization</option>
+                <option>Painting</option>
+                <option>Mood</option>
+                <option>Value</option>
+                <option>Animals</option>
+                <option>Creatures</option>
+                <option>Drawing</option>
+                <option>Traditional Art</option>
+                <option>Figure</option>
+              </datalist>
+              <div class="small">Suggestions are provided but you can type any topic.</div>
+            </div>
+
+            <!-- Keywords -->
             <div class="autocomplete-container">
               <label for="keywords-input">Keywords</label>
               <input id="keywords-input" type="text" placeholder="Type and press Enter to add keywords" autocomplete="off" />
-              <div id="keywords-suggestions" class="autocomplete-suggestions"></div>
+              <div id="keywords-suggestions" class="autocomplete-suggestions" role="listbox" aria-hidden="true"></div>
               <div id="keywords-chips" class="chips" aria-live="polite"></div>
               <input type="hidden" id="keywords" name="keywords" value="">
-              <div class="small">Add multiple keywords. Suggestions come from prior keywords you've used.</div>
+              <div class="small">Add multiple keywords; suggestions come from prior keywords.</div>
             </div>
 
           </fieldset>
@@ -186,7 +247,7 @@
             <button type="button" class="btn undo" id="undoBtn" style="display: none;">Undo Changes</button>
             <button type="button" class="btn" id="cancelEditBtn" style="display: none;">Cancel</button>
             <button type="reset" class="btn">Reset</button>
-            <button type="submit" class="btn accent" id="submitBtn">Add Prompt</button>
+            <button type="submit" class="btn accent" id="submitBtn">Add Resource</button>
           </div>
           <p class="note">Entries are saved in your browser localStorage. Use <em>Export JSON</em> to save a file. Import merges non-duplicate items.</p>
         </form>
@@ -195,11 +256,11 @@
       <!-- List -->
       <section class="panel" aria-labelledby="list-title">
         <div class="list-head">
-          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Prompts</h2>
+          <h2 id="list-title" style="margin: 0; font-size: 1.05rem; color: var(--muted);">Resources</h2>
           <div class="count" id="count">0 items</div>
         </div>
         <div id="cards" class="cards" aria-live="polite"></div>
-        <div id="empty" class="empty" hidden>No prompts yet. Add your first one on the left!</div>
+        <div id="empty" class="empty" hidden>No resources yet. Add your first one on the left!</div>
       </section>
     </main>
   </div>
@@ -207,7 +268,7 @@
   <!-- Delete modal -->
   <div class="modal" id="deleteModal" style="display:none; position: fixed; top:0; left:0; right:0; bottom:0; align-items:center; justify-content:center; z-index:200; background: rgba(0,0,0,0.5);">
     <div style="background:white; padding:18px; border-radius:12px; max-width:420px;">
-      <p>Are you sure you want to delete this prompt?</p>
+      <p>Are you sure you want to delete this resource?</p>
       <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
         <button class="btn" id="cancelDeleteBtn">Cancel</button>
         <button class="btn danger" id="confirmDeleteBtn">Delete</button>
@@ -221,7 +282,7 @@
     // -------------------------
     // Storage & utilities
     // -------------------------
-    const STORAGE_KEY = 'promptEntries.v1';
+    const STORAGE_KEY = 'resourceEntries.v1';
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     let state = [];
@@ -229,8 +290,7 @@
     let entryToDelete = null;
 
     const baseKeywords = [
-      "atmosphere","lighting","mood","color palette","composition","reference","style","vibe","details","setting",
-      "character","pose","gesture","close-up","wide-shot","cinematic","concept","iteration"
+      "beginner","advanced","tutorial","reference","workflow","tooling","guide","video","article","case study","research","inspiration"
     ];
 
     function loadEntries() {
@@ -257,7 +317,9 @@
     }
     function escapeAttr(str='') { return escapeHtml(str); }
 
-    // Keywords utilities
+    // -------------------------
+    // Keyword utilities (dynamic)
+    // -------------------------
     function keywordsFromState() {
       const map = new Map();
       for (const e of state) {
@@ -279,9 +341,9 @@
       return out;
     }
     function getKeywordSuggestions(query, limit = 8) {
-      if (!query) return combinedKeywordSource().slice(0, limit);
-      const q = query.toLowerCase();
       const src = combinedKeywordSource();
+      if (!query) return src.slice(0, limit);
+      const q = query.toLowerCase();
       const matches = src.filter(s => s.toLowerCase().includes(q));
       matches.sort((a,b) => {
         const la = a.toLowerCase(), lb = b.toLowerCase();
@@ -293,7 +355,9 @@
       return matches.slice(0, limit);
     }
 
-    // Keyword chips
+    // -------------------------
+    // Keyword chips management
+    // -------------------------
     function addKeywordChip(keyword) {
       if (!keyword) return;
       const chipsContainer = $('#keywords-chips');
@@ -301,7 +365,7 @@
       if (existing.includes(keyword.toLowerCase())) return;
       const chip = document.createElement('div');
       chip.className = 'chip';
-      chip.innerHTML = `${escapeHtml(keyword)} <span class="chip-remove" data-keyword="${escapeAttr(keyword)}">×</span>`;
+      chip.innerHTML = escapeHtml(keyword) + ' <span class="chip-remove" data-keyword="' + escapeAttr(keyword) + '">×</span>';
       chipsContainer.appendChild(chip);
       chip.querySelector('.chip-remove').addEventListener('click', function() {
         chip.remove();
@@ -324,11 +388,13 @@
         const q = this.value.trim();
         const matches = getKeywordSuggestions(q, 8);
         if (matches.length) {
-          suggestionsEl.innerHTML = matches.map(m => `<div class="autocomplete-suggestion">${escapeHtml(m)}</div>`).join('');
+          suggestionsEl.innerHTML = matches.map(m => '<div class="autocomplete-suggestion" role="option">' + escapeHtml(m) + '</div>').join('');
           suggestionsEl.classList.add('show');
+          suggestionsEl.setAttribute('aria-hidden', 'false');
         } else {
           suggestionsEl.innerHTML = '';
           suggestionsEl.classList.remove('show');
+          suggestionsEl.setAttribute('aria-hidden', 'true');
         }
       });
 
@@ -359,11 +425,96 @@
       });
 
       document.addEventListener('click', function(e) {
-        if (e.target !== input) suggestionsEl.classList.remove('show');
+        if (e.target !== input) {
+          suggestionsEl.classList.remove('show');
+          suggestionsEl.setAttribute('aria-hidden', 'true');
+        }
       });
     }
 
+    // -------------------------
+    // Type radio handling (including "Other")
+    // -------------------------
+    const typeRadiosContainer = $('#typeRadios');
+    const typeOtherWrap = $('#typeOtherWrap');
+    const typeOtherInput = $('#typeOther');
+
+    function updateRadioVisuals() {
+      $$('.radio-item').forEach(label => {
+        const radio = label.querySelector('input[type="radio"]');
+        if (radio && radio.checked) label.classList.add('selected'); else label.classList.remove('selected');
+      });
+    }
+
+    // handle clicks centrally (works even if user clicks label text)
+    typeRadiosContainer.addEventListener('click', (e) => {
+      const label = e.target.closest('.radio-item');
+      if (!label) return;
+      const radio = label.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+        updateRadioVisuals();
+        if (radio.value === 'other') {
+          typeOtherWrap.style.display = 'flex';
+          typeOtherInput.focus();
+        } else {
+          typeOtherWrap.style.display = 'none';
+          typeOtherInput.value = '';
+        }
+      }
+    });
+
+    // also handle keyboard focus/changes on radios
+    $$( 'input[name="type"]' ).forEach(r => {
+      r.addEventListener('change', () => {
+        updateRadioVisuals();
+        if (r.value === 'other' && r.checked) {
+          typeOtherWrap.style.display = 'flex';
+          typeOtherInput.focus();
+        } else if (r.checked) {
+          typeOtherWrap.style.display = 'none';
+        }
+      });
+    });
+
+    function getSelectedTypeValue() {
+      const sel = document.querySelector('input[name="type"]:checked');
+      if (!sel) return '';
+      if (sel.value === 'other') return (typeOtherInput.value || '').trim();
+      return sel.value;
+    }
+
+    function setSelectedTypeValue(value) {
+      // try to match one of the radio values
+      const radios = Array.from(document.querySelectorAll('input[name="type"]'));
+      const match = radios.find(r => r.value === value);
+      if (match) {
+        match.checked = true;
+        typeOtherWrap.style.display = 'none';
+        typeOtherInput.value = '';
+      } else {
+        // select 'other' and put value in the custom input
+        const otherRadio = radios.find(r => r.value === 'other');
+        if (otherRadio) {
+          otherRadio.checked = true;
+          typeOtherWrap.style.display = 'flex';
+          typeOtherInput.value = value;
+        }
+      }
+      updateRadioVisuals();
+    }
+
+    // -------------------------
+    // Utilities
+    // -------------------------
+    function truncateText(str, n = 140) {
+      if (!str) return '';
+      return str.length > n ? str.slice(0, n).trim() + '…' : str;
+    }
+
+    // -------------------------
     // Rendering
+    // -------------------------
     function render(entries, query = '') {
       const cards = $('#cards');
       const empty = $('#empty');
@@ -371,10 +522,12 @@
 
       const q = query.trim().toLowerCase();
       const filtered = q ? entries.filter(e => {
-        return (e.title && e.title.toLowerCase().includes(q)) ||
-               (e.promptText && e.promptText.toLowerCase().includes(q)) ||
+        return (e.name && e.name.toLowerCase().includes(q)) ||
+               (e.creator && e.creator.toLowerCase().includes(q)) ||
                (e.type && e.type.toLowerCase().includes(q)) ||
-               (e.keywords && e.keywords.toLowerCase().includes(q));
+               (e.mainTopic && e.mainTopic.toLowerCase().includes(q)) ||
+               (e.keywords && e.keywords.toLowerCase().includes(q)) ||
+               (e.description && e.description.toLowerCase().includes(q));
       }) : entries;
 
       count.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
@@ -409,42 +562,55 @@
           if (entry) editEntry(entry);
         });
       });
-    }
-
-    function truncateText(s, n=180) {
-      if (!s) return '';
-      return s.length > n ? s.slice(0,n).trim() + '…' : s;
+      $$('#cards [data-action="open"]').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const url = btn.getAttribute('data-url');
+          if (url) window.open(url, '_blank', 'noopener');
+        });
+      });
     }
 
     function cardTemplate(e) {
-      const title = e.title ? `<div class="title">${escapeHtml(e.title)}</div>` : '';
-      const type = e.type ? `<div class="meta">Type: ${escapeHtml(e.type)}</div>` : '';
+      const img = e.thumbnail ? `<img class="thumb" alt="${escapeAttr(e.name)}" src="${escapeAttr(e.thumbnail)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+      const linkPart = e.originalLink ? `<a href="${escapeAttr(e.originalLink)}" target="_blank" rel="noopener" class="btn primary">Open</a>` : '';
+      const metaParts = [];
+      if (e.creator) metaParts.push(escapeHtml(e.creator));
+      if (e.type) metaParts.push(escapeHtml(e.type));
+      if (e.mainTopic) metaParts.push(escapeHtml(e.mainTopic));
+      const meta = metaParts.length ? `<div class="meta">${metaParts.join(' · ')}</div>` : '';
       const keywordChips = e.keywords ? e.keywords.split(',').map(k => `<span class="chip">${escapeHtml(k.trim())}</span>`).join('') : '';
-      const promptPreview = `<div class="meta" title="${escapeAttr(e.promptText || '')}">${escapeHtml(truncateText(e.promptText || ''))}</div>`;
+      const desc = e.description ? `<div class="desc">${escapeHtml(truncateText(e.description, 160))}</div>` : '';
       return `
-        <article class="card" aria-label="${escapeAttr(e.title || (e.promptText||'Prompt'))}">
+        <article class="card" aria-label="${escapeAttr(e.name)}">
+          ${img}
           <div class="card-b">
-            ${title}
-            ${type}
-            ${promptPreview}
+            <div class="title">${escapeHtml(e.name)}</div>
+            ${meta}
+            ${desc}
             ${keywordChips ? `<div class="chips">${keywordChips}</div>` : ''}
             <div class="card-actions">
-              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit prompt">Edit</button>
-              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete prompt">Delete</button>
+              ${linkPart}
+              <button class="btn edit" data-action="edit" data-id="${escapeAttr(e.id)}" title="Edit resource">Edit</button>
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}" title="Delete resource">Delete</button>
             </div>
           </div>
         </article>`;
     }
 
+    // -------------------------
     // Edit / cancel / undo
+    // -------------------------
     function editEntry(entry) {
       originalEntry = {...entry};
       $('#editId').value = entry.id;
-      $('#title').value = entry.title || '';
-      $('#promptText').value = entry.promptText || '';
-      // set radio
-      const radios = $$('input[name="promptType"]');
-      radios.forEach(r => r.checked = (entry.type === r.value));
+      $('#name').value = entry.name || '';
+      $('#creator').value = entry.creator || '';
+      $('#description').value = entry.description || '';
+      setSelectedTypeValue(entry.type || '');
+      $('#originalLink').value = entry.originalLink || '';
+      $('#thumbnail').value = entry.thumbnail || '';
+      $('#mainTopic').value = entry.mainTopic || '';
 
       // keywords chips
       $('#keywords-chips').innerHTML = '';
@@ -452,21 +618,28 @@
         entry.keywords.split(',').map(k => k.trim()).filter(Boolean).forEach(k => addKeywordChip(k));
       }
 
-      $('#submitBtn').textContent = 'Update Prompt';
+      $('#submitBtn').textContent = 'Update Resource';
       $('#cancelEditBtn').style.display = 'block';
-      $('#undoBtn').style.display = 'block';
+      $('#undoBtn').style.display = 'inline-block';
       document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
     }
 
     function cancelEdit() {
       $('#entryForm').reset();
       $('#editId').value = '';
-      $('#submitBtn').textContent = 'Add Prompt';
+      $('#submitBtn').textContent = 'Add Resource';
       $('#cancelEditBtn').style.display = 'none';
       $('#undoBtn').style.display = 'none';
       $('#keywords-chips').innerHTML = '';
       $('#keywords').value = '';
+      $('#description').value = '';
       originalEntry = null;
+      // reset radios and other
+      const radios = Array.from(document.querySelectorAll('input[name="type"]'));
+      radios.forEach(r => r.checked = false);
+      typeOtherInput.value = '';
+      typeOtherWrap.style.display = 'none';
+      updateRadioVisuals();
     }
 
     function undoChanges() {
@@ -481,34 +654,34 @@
       cancelEdit();
     }
 
+    // -------------------------
     // Initialization & handlers
+    // -------------------------
     state = loadEntries();
     render(state);
 
+    // Keywords input
     initKeywordsInput();
 
+    // Submit handler
     $('#entryForm').addEventListener('submit', (ev) => {
       ev.preventDefault();
 
-      // Get selected type (radio)
-      const typeEl = document.querySelector('input[name="promptType"]:checked');
-      const typeVal = typeEl ? typeEl.value : '';
-
       const entry = {
         id: $('#editId').value || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)),
-        createdAt: $('#editId').value ? (state.find(e => e.id === $('#editId').value)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
-        title: $('#title').value.trim(),
-        promptText: $('#promptText').value.trim(),
-        type: typeVal,
+        createdAt: $('#editId').value ? state.find(e => e.id === $('#editId').value)?.createdAt || new Date().toISOString() : new Date().toISOString(),
+        name: $('#name').value.trim(),
+        creator: $('#creator').value.trim(),
+        description: $('#description').value.trim(),
+        type: getSelectedTypeValue(),
+        originalLink: $('#originalLink').value.trim(),
+        thumbnail: $('#thumbnail').value.trim(),
+        mainTopic: $('#mainTopic').value.trim(),
         keywords: $('#keywords').value.trim()
       };
 
-      if (!entry.promptText) {
-        toast('Please add the prompt text.');
-        return;
-      }
-      if (!entry.type) {
-        toast('Please select a type.');
+      if (!entry.name) {
+        toast('Please add the resource name.');
         return;
       }
 
@@ -516,11 +689,11 @@
         const idx = state.findIndex(e => e.id === $('#editId').value);
         if (idx !== -1) {
           state[idx] = entry;
-          toast('Prompt updated');
+          toast('Resource updated');
         }
       } else {
         state.unshift(entry);
-        toast('Prompt added');
+        toast('Resource added');
       }
 
       saveEntries(state);
@@ -537,7 +710,7 @@
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,10);
       a.href = url;
-      a.download = `prompts-${stamp}.json`;
+      a.download = `resources-${stamp}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -562,9 +735,13 @@
             state.push({
               id,
               createdAt: it.createdAt || new Date().toISOString(),
-              title: it.title || it.name || '',
-              promptText: it.promptText || it.prompt || it.text || '',
+              name: it.name || it.title || it.resource || '',
+              creator: it.creator || it.author || '',
+              description: it.description || it.desc || it.summary || '',
               type: it.type || it.category || '',
+              originalLink: it.originalLink || it.link || it.url || '',
+              thumbnail: it.thumbnail || it.imageUrl || it.thumb || '',
+              mainTopic: it.mainTopic || it.topic || '',
               keywords: it.keywords || ''
             });
             byKey.set(id, true);
@@ -589,7 +766,7 @@
 
     // Clear all
     $('#clearBtn').addEventListener('click', () => {
-      if (!confirm('This will remove all items stored locally on this browser. Continue?')) return;
+      if (!confirm('This will remove all resources stored locally on this browser. Continue?')) return;
       state.splice(0, state.length);
       saveEntries(state);
       render(state);
@@ -612,7 +789,7 @@
           state.splice(idx, 1);
           saveEntries(state);
           render(state, $('#search').value);
-          toast('Prompt removed');
+          toast('Resource removed');
         }
       }
       $('#deleteModal').style.display = 'none';
@@ -626,6 +803,9 @@
         entryToDelete = null;
       }
     });
+
+    // initialize radio visuals
+    updateRadioVisuals();
   </script>
 </body>
 </html>

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Color Database</title>
+  <style>
+    :root{
+      --bg:#ffe8ff;
+      --card:#fff;
+      --muted:#6c757d;
+      --text:#212529;
+      --border:#e0c0e0;
+      --accent:#f728dc;
+      --chip:#f8e8f8;
+      --radius:14px;
+      --focus:#f728dc;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      line-height:1.4;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+    header{padding:28px 20px 12px;position:sticky;top:0;background:linear-gradient(180deg,rgba(255,232,255,0.85),rgba(255,232,255,0.6));border-bottom:1px solid var(--border);z-index:10}
+    h1{margin:0;font-size:1.5rem}
+    .sub{color:var(--muted);font-size:0.95rem}
+    .toolbar{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--border);background:#f8f0f8;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(180deg,#f8e0f8,#f0d0f0);border-color:var(--border)}
+    .btn.accent{background:#ffd0ff;border-color:var(--accent);color:#800080}
+    .btn.danger{background:#f8d7da;border-color:#f1aeb5;color:#58151c}
+    main{display:grid;grid-template-columns:1fr;gap:18px;padding:18px 0 40px}
+    @media(min-width:980px){main{grid-template-columns:420px 1fr;align-items:start}}
+    form{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px}
+    fieldset{border:0;padding:0;margin:0}
+    .grid{display:grid;gap:12px}
+    label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px}
+    input[type="text"], input[type="url"], textarea, select {
+      width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);outline:none;
+      transition:box-shadow .15s,border-color .15s;
+    }
+    input:focus, textarea:focus, select:focus{border-color:var(--focus);box-shadow:0 0 0 4px rgba(247,40,220,0.08)}
+    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px}
+    .list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+    .count{color:var(--muted);font-size:0.9rem}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+    .card{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+    .thumb{aspect-ratio:4/3;width:100%;object-fit:cover;background:#f8f0f8}
+    .card-b{padding:12px;display:grid;gap:8px}
+    .title{font-weight:700;font-size:1rem}
+    .meta{color:var(--muted);font-size:0.85rem}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:var(--chip);font-size:0.85rem}
+    .swatch{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 1px 0 rgba(255,255,255,0.4) inset}
+    .empty{text-align:center;color:var(--muted);padding:28px 0;border:1px dashed var(--border);border-radius:12px}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .colors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+    .color-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer}
+    .color-item.selected{outline:2px solid rgba(247,40,220,0.12);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35)}
+    .color-checkbox{width:18px;height:18px;flex:0 0 18px}
+    .color-label{font-size:0.9rem}
+    .note{font-size:0.85rem;color:var(--muted);margin-top:8px}
+    .toast{position:fixed;right:16px;bottom:18px;background:#ffd0ff;color:#800080;border:1px solid var(--accent);padding:10px 12px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);opacity:0;transform:translateY(6px);transition:.28s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h1>Color Database</h1>
+          <div class="sub">Store palettes & color references: name, image, colors checklist and original link</div>
+        </div>
+        <button class="btn" onclick="window.location.href='Index.html'">Back to Index</button>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="exportBtn" title="Download all entries as JSON">Export JSON</button>
+        <label class="btn">
+          <span class="file-input">Import JSON
+            <input type="file" id="importInput" accept="application/json" style="display:none" />
+          </span>
+        </label>
+        <button class="btn" id="clearBtn">Clear All (Local)</button>
+        <input type="search" id="search" placeholder="Search by name or color..." style="padding:10px 12px;border-radius:12px;border:1px solid var(--border)" />
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title" style="margin:4px 0 10px;color:var(--muted);font-size:1.05rem">Add / Edit Color Reference</h2>
+        <form id="entryForm">
+          <input type="hidden" id="editId" value="">
+          <fieldset class="grid">
+            <div>
+              <label for="name">Name *</label>
+              <input id="name" type="text" required placeholder="e.g., Sunset Palette" />
+            </div>
+
+            <div>
+              <label for="imageUrl">Image URL</label>
+              <input id="imageUrl" type="url" placeholder="https://.../image.jpg" />
+            </div>
+
+            <!-- moved: link to original appears before checklist -->
+            <div>
+              <label for="originalLink">Link to original</label>
+              <input id="originalLink" type="url" placeholder="https://..." />
+            </div>
+
+            <div>
+              <label>Colors (select one or more)</label>
+              <div class="colors-grid" id="colorsChecklist" aria-label="Available colors">
+                <!-- color checkboxes injected by JS -->
+              </div>
+              <div class="small">Click a color or its checkbox to toggle selection.</div>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="button" class="btn" id="cancelEditBtn" style="display:none">Cancel</button>
+            <button type="reset" class="btn">Reset</button>
+            <button type="submit" class="btn accent" id="submitBtn">Add Color Reference</button>
+          </div>
+          <p class="note">Entries are saved locally in your browser (localStorage). Use Export to download JSON. Import merges non-duplicate items.</p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title" style="margin:0;color:var(--muted);font-size:1.05rem">Color References</h2>
+          <div class="count" id="count">0 items</div>
+        </div>
+        <div id="cards" class="cards" aria-live="polite"></div>
+        <div id="empty" class="empty" hidden>No color references yet. Add one on the left!</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // -------------------------
+    // Storage & utilities
+    // -------------------------
+    const STORAGE_KEY = 'colorEntries.v1';
+    const $ = (sel,root=document) => root.querySelector(sel);
+    const $$ = (sel,root=document) => Array.from(root.querySelectorAll(sel));
+    let state = [];
+    // seed palette options
+    let paletteOptions = [
+      {name: 'Red', hex:'#FF4D4F'},
+      {name: 'Orange', hex:'#FFA940'},
+      {name: 'Yellow', hex:'#FFD666'},
+      {name: 'Green', hex:'#73D13D'},
+      {name: 'Teal', hex:'#13C2C2'},
+      {name: 'Blue', hex:'#40A9FF'},
+      {name: 'Indigo', hex:'#5C6AC4'},
+      {name: 'Purple', hex:'#9254DE'},
+      {name: 'Pink', hex:'#FF85C0'},
+      {name: 'Brown', hex:'#A16A47'},
+      {name: 'Gray', hex:'#8C8C8C'},
+      {name: 'Black', hex:'#000000'},
+      {name: 'White', hex:'#FFFFFF'},
+      {name: 'Cyan', hex:'#00D9FF'},
+      {name: 'Magenta', hex:'#FF00AA'}
+    ];
+
+    function loadEntries(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      }catch{ return []; }
+    }
+    function saveEntries(entries){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+    function toast(msg){
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(()=>el.classList.remove('show'),1400);
+    }
+    function escapeHtml(s=''){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function escapeAttr(s=''){ return escapeHtml(s); }
+
+    // -------------------------
+    // Colors checklist rendering
+    // -------------------------
+    const colorsContainer = $('#colorsChecklist');
+
+    function renderColorOptions(){
+      colorsContainer.innerHTML = paletteOptions.map((c,idx)=> {
+        const id = `color-opt-${idx}`;
+        return `<label class="color-item" for="${id}" data-hex="${escapeAttr(c.hex)}" title="${escapeAttr(c.name)}">
+          <input type="checkbox" class="color-checkbox" id="${id}" data-name="${escapeAttr(c.name)}" data-hex="${escapeAttr(c.hex)}">
+          <div class="swatch" style="background:${escapeAttr(c.hex)};"></div>
+          <div class="color-label">${escapeHtml(c.name)}</div>
+        </label>`;
+      }).join('');
+    }
+
+    // update visual selection state when a checkbox changes
+    colorsContainer.addEventListener('change', (ev) => {
+      const target = ev.target;
+      if(target && target.classList.contains('color-checkbox')){
+        const label = target.closest('.color-item');
+        if(label) label.classList.toggle('selected', target.checked);
+      }
+    });
+
+    // -------------------------
+    // Card rendering
+    // -------------------------
+    function truncate(s,n=140){ if(!s) return ''; return s.length>n ? s.slice(0,n).trim()+'…' : s; }
+
+    function render(entries, query=''){
+      const cards = $('#cards');
+      const empty = $('#empty');
+      const count = $('#count');
+      const q = (query||'').trim().toLowerCase();
+      const filtered = q ? entries.filter(e => {
+        return (e.name && e.name.toLowerCase().includes(q)) ||
+               (e.colors && e.colors.some(c => (c.name||'').toLowerCase().includes(q) || (c.hex||'').toLowerCase().includes(q)));
+      }) : entries;
+
+      count.textContent = `${filtered.length} item${filtered.length===1?'':'s'}`;
+      if(!filtered.length){ cards.innerHTML=''; empty.hidden=false; return; }
+      empty.hidden=true;
+
+      cards.innerHTML = filtered.map(e => {
+        const img = e.imageUrl ? `<img class="thumb" src="${escapeAttr(e.imageUrl)}" alt="${escapeAttr(e.name)}" onerror="this.src=''; this.style.display='none'">` : '<div class="thumb" aria-hidden="true"></div>';
+        const colorChips = (e.colors || []).map(c => {
+          const safeHex = escapeAttr(c.hex || '');
+          const label = escapeHtml(c.name || c.hex || '');
+          return `<span class="chip"><span class="swatch" style="background:${safeHex}"></span>${label}</span>`;
+        }).join('');
+        const linkBtn = e.originalLink ? `<a class="btn primary" href="${escapeAttr(e.originalLink)}" target="_blank" rel="noopener">Open</a>` : '';
+        return `<article class="card" aria-label="${escapeAttr(e.name)}">
+          ${img}
+          <div class="card-b">
+            <div class="title">${escapeHtml(e.name)}</div>
+            ${e.imageUrl ? `<div class="meta">Image URL: <span class="small">${escapeHtml(truncate(e.imageUrl, 60))}</span></div>` : ''}
+            ${colorChips ? `<div class="chips">${colorChips}</div>` : ''}
+            <div style="display:flex;gap:6px;margin-top:8px">
+              ${linkBtn}
+              <button class="btn" data-action="edit" data-id="${escapeAttr(e.id)}">Edit</button>
+              <button class="btn danger" data-action="delete" data-id="${escapeAttr(e.id)}">Delete</button>
+            </div>
+          </div>
+        </article>`;
+      }).join('');
+
+      // wire buttons
+      $$('#cards [data-action="delete"]').forEach(btn => btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        if(!id) return;
+        if(!confirm('Delete this color reference?')) return;
+        const idx = state.findIndex(x => x.id === id);
+        if(idx > -1){ state.splice(idx,1); saveEntries(state); render(state, $('#search').value); toast('Removed'); }
+      }));
+      $$('#cards [data-action="edit"]').forEach(btn => btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        const entry = state.find(x => x.id === id);
+        if(entry) startEdit(entry);
+      }));
+    }
+
+    // -------------------------
+    // Edit flow
+    // -------------------------
+    function startEdit(entry){
+      $('#editId').value = entry.id;
+      $('#name').value = entry.name || '';
+      $('#imageUrl').value = entry.imageUrl || '';
+      $('#originalLink').value = entry.originalLink || '';
+
+      // ensure palette includes any colors used by entry (so they appear)
+      (entry.colors || []).forEach(c => {
+        if(!paletteOptions.some(p => p.hex.toLowerCase() === (c.hex||'').toLowerCase() || p.name.toLowerCase() === (c.name||'').toLowerCase())){
+          paletteOptions.push({name: c.name || c.hex, hex: c.hex});
+        }
+      });
+
+      renderColorOptions();
+
+      // clear/check according to entry colors
+      $$('.color-checkbox').forEach(cb => {
+        const isChecked = (entry.colors || []).some(c => (c.hex||'').toLowerCase() === (cb.dataset.hex||'').toLowerCase() || (c.name||'').toLowerCase() === (cb.dataset.name||'').toLowerCase());
+        cb.checked = !!isChecked;
+        cb.closest('.color-item')?.classList.toggle('selected', !!isChecked);
+      });
+
+      $('#submitBtn').textContent = 'Update Color Reference';
+      $('#cancelEditBtn').style.display = 'inline-block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function cancelEdit(){
+      $('#entryForm').reset();
+      $('#editId').value = '';
+      $('#submitBtn').textContent = 'Add Color Reference';
+      $('#cancelEditBtn').style.display = 'none';
+      // uncheck all color boxes
+      $$('.color-checkbox').forEach(cb=>{ cb.checked=false; cb.closest('.color-item')?.classList.remove('selected'); });
+    }
+
+    // -------------------------
+    // Init & handlers
+    // -------------------------
+    renderColorOptions();
+
+    state = loadEntries();
+    render(state);
+
+    // submit handler
+    $('#entryForm').addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const selected = $$('.color-checkbox').filter(cb => cb.checked).map(cb => ({ name: cb.dataset.name, hex: cb.dataset.hex }));
+      const entry = {
+        id: $('#editId').value || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2)),
+        createdAt: new Date().toISOString(),
+        name: $('#name').value.trim(),
+        imageUrl: $('#imageUrl').value.trim(),
+        originalLink: $('#originalLink').value.trim(),
+        colors: selected
+      };
+      if(!entry.name){ toast('Please add a name'); return; }
+
+      if($('#editId').value){
+        const idx = state.findIndex(e => e.id === $('#editId').value);
+        if(idx !== -1){ entry.createdAt = state[idx].createdAt || entry.createdAt; state[idx] = entry; toast('Updated'); }
+      } else { state.unshift(entry); toast('Added'); }
+
+      saveEntries(state);
+      render(state, $('#search').value);
+      cancelEdit();
+    });
+
+    // export
+    $('#exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `colors-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast('JSON exported');
+    });
+
+    // import
+    $('#importInput').addEventListener('change', async (ev) => {
+      const file = ev.target.files?.[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const incoming = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+        if(!incoming.length) throw new Error('No items found');
+        const byKey = new Map(state.map(it => [it.id, it]));
+        let added = 0;
+        for(const it of incoming){
+          const id = it.id || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
+          if(!byKey.has(id)){
+            state.push({
+              id,
+              createdAt: it.createdAt || new Date().toISOString(),
+              name: it.name || it.title || '',
+              imageUrl: it.imageUrl || it.image || '',
+              originalLink: it.originalLink || it.link || '',
+              colors: Array.isArray(it.colors) ? it.colors.map(c => ({ name: c.name||c.label||'', hex: c.hex||c.value||'' })) : []
+            });
+            byKey.set(id,true);
+            added++;
+          }
+        }
+        saveEntries(state);
+        render(state, $('#search').value);
+        toast(`Imported ${added} item${added===1?'':'s'}`);
+      }catch(err){
+        console.error(err);
+        toast('Import failed: invalid JSON');
+      }finally{
+        ev.target.value='';
+      }
+    });
+
+    // search
+    $('#search').addEventListener('input', (e) => render(state, e.target.value));
+
+    // clear all
+    $('#clearBtn').addEventListener('click', () => {
+      if(!confirm('This will remove all color references stored locally on this browser. Continue?')) return;
+      state.splice(0,state.length);
+      saveEntries(state);
+      render(state);
+      toast('All local data cleared');
+    });
+
+    // cancel edit
+    $('#cancelEditBtn').addEventListener('click', cancelEdit);
+  </script>
+</body>
+</html>
